@@ -1,8 +1,6 @@
-$Id: README 99560 2016-09-27 07:03:29Z gcosmo $
--------------------------------------------------------------------
 
 #                            NEXT Plastic Test Simulation
-                            ----------------------------
+#                            ----------------------------
 
 This is a simulation of a setup used to test the reflectance of
 candidate plastics for the NEXT-100 light tube. 
