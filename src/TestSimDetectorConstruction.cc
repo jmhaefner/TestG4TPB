@@ -133,7 +133,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         "Hollow");
 
   new G4PVPlacement(0,
-                    G4ThreeVector(0,0,-tef_thick/2),
+                    G4ThreeVector(0,0,-tef_thick/2-0.01*mm),
                     logicHollow,
                     "Hollow",
                     logicBox,
