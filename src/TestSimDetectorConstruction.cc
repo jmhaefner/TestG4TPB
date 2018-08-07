@@ -60,10 +60,11 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
   
-  // Envelope parameters
+  // Teflon parameters
   //
-  G4double env_sizeXZ = 15*cm, env_sizeY = 5*cm;
-  G4Material* env_mat = nist->FindOrBuildMaterial("G4_TEFLON");
+  G4double tef_thick = 5.1*mm;
+  G4double int_boxXY = 69*mm, int_boxZ = 150*mm;
+  G4Material* tef_mat = nist->FindOrBuildMaterial("G4_TEFLON");
    
   // Option to switch on/off checking of volumes overlaps
   //
@@ -72,13 +73,13 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   //     
   // World
   //
-  G4double world_sizeXZ = 1.2*env_sizeXZ;
-  G4double world_sizeY  = 1.2*env_sizeY;
+  G4double world_sizeXY = 1.2*(int_boxXY + 2*tef_thick);
+  G4double world_sizeZ  = 1.2*(int_boxZ + tef_thick);
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
   
   G4Box* solidWorld =    
     new G4Box("World",                       //its name
-       0.5*world_sizeXZ, 0.5*world_sizeY, 0.5*world_sizeXZ);     //its size
+       0.5*world_sizeXY, 0.5*world_sizeXY, 0.5*world_sizeZ);     //its size
       
   G4LogicalVolume* logicWorld =                         
     new G4LogicalVolume(solidWorld,          //its solid
@@ -96,21 +97,21 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                       checkOverlaps);        //overlaps checking
                      
   //     
-  // Envelope
+  // Teflon box
   //  
-  G4Box* solidEnv =    
-    new G4Box("Envelope",                    //its name
-        0.5*env_sizeXZ, 0.5*env_sizeY, 0.5*env_sizeXZ); //its size
+  G4Box* solidBox =    
+    new G4Box("Box",                    //its name
+        0.5*(int_boxXY + 2*tef_thick), 0.5*(int_boxXY + 2*tef_thick), 0.5*(int_boxZ + tef_thick)); //its size
       
-  G4LogicalVolume* logicEnv =                         
-    new G4LogicalVolume(solidEnv,            //its solid
-                        env_mat,             //its material
-                        "Envelope");         //its name
+  G4LogicalVolume* logicBox =                         
+    new G4LogicalVolume(solidBox,            //its solid
+                        tef_mat,             //its material
+                        "Box");         //its name
                
   new G4PVPlacement(0,                       //no rotation
                     G4ThreeVector(),         //at (0,0,0)
-                    logicEnv,                //its logical volume
-                    "Envelope",              //its name
+                    logicBox,                //its logical volume
+                    "Box",              //its name
                     logicWorld,              //its mother  volume
                     false,                   //no boolean operation
                     0,                       //copy number
@@ -124,7 +125,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4Box* hollow = 
     new G4Box("Hollow",
-        (0.5*env_sizeXZ)-1, (0.5*env_sizeY)-1, (0.5*env_sizeXZ)-1);
+        0.5*int_boxXY, 0.5*int_boxXY, 0.5*int_boxZ);
 
   G4LogicalVolume* logicHollow = 
     new G4LogicalVolume(hollow,
@@ -132,10 +133,10 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         "Hollow");
 
   new G4PVPlacement(0,
-                    G4ThreeVector(),
+                    G4ThreeVector(0,0,-tef_thick/2),
                     logicHollow,
                     "Hollow",
-                    logicEnv,
+                    logicBox,
                     false,
                     0,
                     checkOverlaps);
@@ -204,7 +205,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // Set Shape2 as scoring volume
   //
   //fScoringVolume = logicShape2;
-    fScoringVolume = logicEnv;
+    fScoringVolume = logicBox;
 
   //
   //always return the physical World
