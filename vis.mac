@@ -107,6 +107,8 @@
 /vis/geometry/set/colour Hollow  0 1 1 1 .25
 # Make teflon box slightly yellow
 /vis/geometry/set/colour Box 0 1 1 0.95 1
+# Make copper red
+/vis/geometry/set/colour Cu 0 1 .35 0 1
 /vis/viewer/set/style wireframe
 /vis/viewer/set/hiddenMarker true
 /vis/viewer/set/viewpointVector -.8 .4 -1

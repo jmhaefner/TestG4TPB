@@ -100,23 +100,22 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // Teflon box
   //  
   G4Box* solidBox =    
-    new G4Box("Box",                    //its name
+    new G4Box("Box",                         // its name
         0.5*(int_boxXY + 2*tef_thick), 0.5*(int_boxXY + 2*tef_thick), 0.5*(int_boxZ + tef_thick)); //its size
       
   G4LogicalVolume* logicBox =                         
-    new G4LogicalVolume(solidBox,            //its solid
-                        tef_mat,             //its material
-                        "Box");         //its name
+    new G4LogicalVolume(solidBox,            // its solid
+                        tef_mat,             // its material
+                        "Box");              // its name
                
-  new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(),         //at (0,0,0)
-                    logicBox,                //its logical volume
-                    "Box",              //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);          //overlaps checking
- 
+  new G4PVPlacement(0,                       // no rotation
+                    G4ThreeVector(),         // at (0,0,0)
+                    logicBox,                // its logical volume
+                    "Box",                   // its name
+                    logicWorld,              // its mother  volume
+                    false,                   // no boolean operation
+                    0,                       // copy number
+                    checkOverlaps);          // overlaps checking
 
   //
   // Box of air inside teflon box
@@ -140,72 +139,55 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     false,
                     0,
                     checkOverlaps);
-                    
-                        
 
   //     
-  // Shape 1
+  // Copper heat sink
   //  
-//  G4Material* shape1_mat = nist->FindOrBuildMaterial("G4_A-150_TISSUE");
-//  G4ThreeVector pos1 = G4ThreeVector(0, 2*cm, -7*cm);
-//        
-//  // Conical section shape       
-//  G4double shape1_rmina =  0.*cm, shape1_rmaxa = 2.*cm;
-//  G4double shape1_rminb =  0.*cm, shape1_rmaxb = 4.*cm;
-//  G4double shape1_hz = 3.*cm;
-//  G4double shape1_phimin = 0.*deg, shape1_phimax = 360.*deg;
-//  G4Cons* solidShape1 =    
-//    new G4Cons("Shape1", 
-//    shape1_rmina, shape1_rmaxa, shape1_rminb, shape1_rmaxb, shape1_hz,
-//    shape1_phimin, shape1_phimax);
-//                      
-//  G4LogicalVolume* logicShape1 =                         
-//    new G4LogicalVolume(solidShape1,         //its solid
-//                        shape1_mat,          //its material
-//                        "Shape1");           //its name
-//               
-//  new G4PVPlacement(0,                       //no rotation
-//                    pos1,                    //at position
-//                    logicShape1,             //its logical volume
-//                    "Shape1",                //its name
-//                    logicEnv,                //its mother  volume
-//                    false,                   //no boolean operation
-//                    0,                       //copy number
-//                    checkOverlaps);          //overlaps checking
-//
-  //     
-  // Shape 2
-  //
-  //G4Material* shape2_mat = nist->FindOrBuildMaterial("G4_BONE_COMPACT_ICRU");
-  //G4ThreeVector pos2 = G4ThreeVector(0, -1*cm, 7*cm);
+  G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_COPPER");
 
-  //// Trapezoid shape       
-  //G4double shape2_dxa = 12*cm, shape2_dxb = 12*cm;
-  //G4double shape2_dya = 10*cm, shape2_dyb = 16*cm;
-  //G4double shape2_dz  = 6*cm;      
-  //G4Trd* solidShape2 =    
-  //  new G4Trd("Shape2",                      //its name
-  //            0.5*shape2_dxa, 0.5*shape2_dxb, 
-  //            0.5*shape2_dya, 0.5*shape2_dyb, 0.5*shape2_dz); //its size
-  //              
-  //G4LogicalVolume* logicShape2 =                         
-  //  new G4LogicalVolume(solidShape2,         //its solid
-  //                      shape2_mat,          //its material
-  //                      "Shape2");           //its name
-  //             
-  //new G4PVPlacement(0,                       //no rotation
-  //                  pos2,                    //at position
-  //                  logicShape2,             //its logical volume
-  //                  "Shape2",                //its name
-  //                  logicEnv,                //its mother  volume
-  //                  false,                   //no boolean operation
-  //                  0,                       //copy number
-  //                  checkOverlaps);          //overlaps checking
-                
-  // Set Shape2 as scoring volume
+  G4Box* solidCu =
+    new G4Box("Cu",                          // its name
+        33*mm/2, 33*mm/2, 2.5*mm/2);         // its size
+
+  G4LogicalVolume* logicCu =
+    new G4LogicalVolume(solidCu,             // its solid
+                        Cu_mat,              // its material
+                        "Cu");               // its name
+
+  new G4PVPlacement(0,                       // no rotation
+                    G4ThreeVector(0,0,-int_boxZ/2),         // at (0,0,0)
+                    logicCu,                 // its logical volume
+                    "Cu",                    // its name
+                    logicBox,                // its mother  volume
+                    false,                   // no boolean operation
+                    0,                       // copy number
+                    checkOverlaps);          // overlaps checking
+                        
   //
-  //fScoringVolume = logicShape2;
-    fScoringVolume = logicBox;
+  // Hole in copper
+  //
+/*
+  G4VSolid* solidHole = 
+    new G4Tubs("Hole",                       // its name
+        0,30*mm, 2.5*mm,0, 360*deg);      // its size
+
+  G4LogicalVolume* logicHole = 
+    new G4LogicalVolume(solidHole,           // its solid
+                        hollow_mat,          // its material
+                        "Hole");             // its name
+
+  new G4PVPlacement(0,
+                    G4ThreeVector(30*mm, 30*mm, 0),
+                    logicHole,
+                    "Hole",
+                    logicCu,
+                    false,
+                    0,
+                    checkOverlaps);
+ */
+  // scoring volume
+  //
+  fScoringVolume = logicBox;
 
   //
   //always return the physical World
