@@ -84,7 +84,7 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if (!fEnvelopeBox)
   {
     G4LogicalVolume* envLV
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("Envelope");
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("Box");
     if ( envLV ) fEnvelopeBox = dynamic_cast<G4Box*>(envLV->GetSolid());
   }
 
@@ -101,12 +101,24 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
      "MyCode0002",JustWarning,msg);
   }
 
-  G4double size = 0.8; 
-  G4double x0 = size * envSizeXY * (G4UniformRand()-0.5);
-  G4double y0 = size * envSizeXY * (G4UniformRand()-0.5);
-  G4double z0 = -0.5 * envSizeZ;
+  //G4double size = 0.8; 
+  //G4double x0 = size * envSizeXY * (G4UniformRand()-0.5);
+  //G4double y0 = size * envSizeXY * (G4UniformRand()-0.5);
+  // Create a point source with a 120 degree spread, placed in the center
+  // of the (X,Y) of the box
+  //G4double x0 = 0.06*envSizeXY;
+  //G4double y0 = 0.06*envSizeXY;
+  G4double x0 = 0.0;
+  G4double y0 = 0.0;
+  G4double z0 = -0.75 * envSizeZ;
   
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
+  //G4RandGauss* gaussian(0.0,1.0);
+  G4RandGauss* gaussian = new G4RandGauss(CLHEP::HepRandom::getTheEngine(),0.0,1.0);
+  G4double px = gaussian->shoot();
+  G4double py = gaussian->shoot();
+  G4double pz = gaussian->shoot();
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px,py,pz));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }
