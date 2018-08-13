@@ -66,6 +66,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   G4double tef_thick = 5.1*mm;
   G4double int_boxXY = 69*mm, int_boxZ = 150*mm;
   G4Material* tef_mat = nist->FindOrBuildMaterial("G4_TEFLON");
+  tef_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Teflon());
    
   // Option to switch on/off checking of volumes overlaps
   //
