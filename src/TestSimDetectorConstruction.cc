@@ -156,7 +156,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4double PMT_Z = -int_boxZ/2;
  
-  G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_COPPER");
+  G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_Cu");
 
   G4Box* solidCu =
     new G4Box("Cu",                          // its name
