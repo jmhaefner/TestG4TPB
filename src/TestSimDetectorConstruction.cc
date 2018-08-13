@@ -29,6 +29,7 @@
 /// \brief Implementation of the TestSimDetectorConstruction class
 
 #include "TestSimDetectorConstruction.hh"
+#include "TestSimOpticalMaterialProperties.hh"
 
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
@@ -76,6 +77,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   G4double world_sizeXY = 1.2*(int_boxXY + 2*tef_thick);
   G4double world_sizeZ  = 1.2*(int_boxZ + tef_thick);
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
+  world_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Air());
   
   G4Box* solidWorld =    
     new G4Box("World",                       //its name
@@ -107,7 +109,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
     new G4LogicalVolume(solidBox,            // its solid
                         tef_mat,             // its material
                         "Box");              // its name
-               
+
   new G4PVPlacement(0,                       // no rotation
                     G4ThreeVector(),         // at (0,0,0)
                     logicBox,                // its logical volume
@@ -121,6 +123,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // Box of air inside teflon box
   //
   G4Material* hollow_mat = nist->FindOrBuildMaterial("G4_AIR");
+  hollow_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Air());
 
   G4Box* hollow = 
     new G4Box("Hollow",
