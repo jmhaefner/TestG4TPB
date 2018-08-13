@@ -34,6 +34,7 @@
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
+#include "G4Tubs.hh"
 #include "G4Cons.hh"
 #include "G4Orb.hh"
 #include "G4Sphere.hh"
@@ -145,7 +146,10 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   //     
   // Copper heat sink
-  //  
+  // 
+
+  G4double PMT_Z = -int_boxZ/2;
+ 
   G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_COPPER");
 
   G4Box* solidCu =
@@ -158,7 +162,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         "Cu");               // its name
 
   new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(0,0,-int_boxZ/2),         // at (0,0,0)
+                    G4ThreeVector(-30*mm/2,-30*mm/2,PMT_Z),         // at (0,0,0)
                     logicCu,                 // its logical volume
                     "Cu",                    // its name
                     logicBox,                // its mother  volume
@@ -169,10 +173,9 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   //
   // Hole in copper
   //
-/*
   G4VSolid* solidHole = 
     new G4Tubs("Hole",                       // its name
-        0,30*mm, 2.5*mm,0, 360*deg);      // its size
+        0,30*mm, 2.5*mm/2, 180.0*deg,90.0*deg);      // its size
 
   G4LogicalVolume* logicHole = 
     new G4LogicalVolume(solidHole,           // its solid
@@ -180,14 +183,14 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         "Hole");             // its name
 
   new G4PVPlacement(0,
-                    G4ThreeVector(30*mm, 30*mm, 0),
+                    G4ThreeVector(33*mm/2, 33*mm/2, 0),
                     logicHole,
                     "Hole",
                     logicCu,
                     false,
                     0,
                     checkOverlaps);
- */
+ 
   // scoring volume
   //
   fScoringVolume = logicBox;
