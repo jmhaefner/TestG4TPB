@@ -107,7 +107,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                       checkOverlaps);        //overlaps checking
                      
   //     
-  // Teflon box
+  // Plastic box
   //
   G4Box* fullBox =    
     new G4Box("fullBox",                         // its name
