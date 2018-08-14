@@ -109,6 +109,10 @@
 /vis/geometry/set/colour Box 0 1 1 0.95 1
 # Make copper red
 /vis/geometry/set/colour Cu 0 1 .35 0 1
+# Make copper cut out slightly transparent
+/vis/geometry/set/colour Hole 0 1 1 1 .8
+# Make PMT yellow
+/vis/geometry/set/colour PMT 0 1 .8 .1 .9
 /vis/viewer/set/style wireframe
 /vis/viewer/set/hiddenMarker true
 /vis/viewer/set/viewpointVector -.8 .4 -1

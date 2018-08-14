@@ -39,7 +39,7 @@
 TestSimEventAction::TestSimEventAction(TestSimRunAction* runAction)
 : G4UserEventAction(),
   fRunAction(runAction),
-  fEdep(0.)
+  fNphoton(0.)
 {} 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -51,7 +51,7 @@ TestSimEventAction::~TestSimEventAction()
 
 void TestSimEventAction::BeginOfEventAction(const G4Event*)
 {    
-  fEdep = 0.;
+  fNphoton = 0.;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -59,7 +59,7 @@ void TestSimEventAction::BeginOfEventAction(const G4Event*)
 void TestSimEventAction::EndOfEventAction(const G4Event*)
 {   
   // accumulate statistics in run action
-  fRunAction->AddEdep(fEdep);
+  fRunAction->AddNphoton(fNphoton);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
