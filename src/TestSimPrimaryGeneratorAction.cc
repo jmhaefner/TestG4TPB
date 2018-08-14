@@ -54,7 +54,7 @@ TestSimPrimaryGeneratorAction::TestSimPrimaryGeneratorAction()
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
   G4ParticleDefinition* particle
-    = particleTable->FindParticle(particleName="gamma");
+    = particleTable->FindParticle(particleName="opticalphoton");
   fParticleGun->SetParticleDefinition(particle);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   fParticleGun->SetParticleEnergy(6.*MeV);
@@ -84,7 +84,7 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if (!fEnvelopeBox)
   {
     G4LogicalVolume* envLV
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("Envelope");
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("Box");
     if ( envLV ) fEnvelopeBox = dynamic_cast<G4Box*>(envLV->GetSolid());
   }
 
@@ -101,12 +101,31 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
      "MyCode0002",JustWarning,msg);
   }
 
-  G4double size = 0.8; 
-  G4double x0 = size * envSizeXY * (G4UniformRand()-0.5);
-  G4double y0 = size * envSizeXY * (G4UniformRand()-0.5);
-  G4double z0 = -0.5 * envSizeZ;
+  //G4double size = 0.8; 
+  //G4double x0 = size * envSizeXY * (G4UniformRand()-0.5);
+  //G4double y0 = size * envSizeXY * (G4UniformRand()-0.5);
+  // Create a point source with a 120 degree spread, placed in the center
+  // of the (X,Y) of the box
+  //G4double x0 = 0.06*envSizeXY;
+  //G4double y0 = 0.06*envSizeXY;
+  G4double x0 = 0.0;
+  G4double y0 = 0.0;
+  G4double z0 = -0.75 * envSizeZ;
   
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
+  //G4RandGauss* gaussian(0.0,1.0);
+  // The gaussian from which we sample theta below has std dev of 0.445 in order
+  // to place the full width half max (= 2.355*sigma) at +/- 60 degrees (pi/3 rad)
+  G4RandGauss* gaussian = new G4RandGauss(CLHEP::HepRandom::getTheEngine(),0.0,0.445);
+  // "azimuthal" angle w.r.t. z-axis:
+  G4double theta = gaussian->shoot();
+  // polar angle in the x-y plane:
+  G4double phi = G4UniformRand()*2*CLHEP::pi;
+  // now calculate the momentum components:
+  G4double px = cos(theta)*cos(phi);
+  G4double py = sin(theta);
+  G4double pz = cos(theta)*sin(phi);
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px,py,pz));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

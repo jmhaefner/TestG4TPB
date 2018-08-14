@@ -29,6 +29,7 @@
 /// \brief Implementation of the TestSimDetectorConstruction class
 
 #include "TestSimDetectorConstruction.hh"
+#include "TestSimOpticalMaterialProperties.hh"
 
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
@@ -62,11 +63,17 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
   
-  // Teflon parameters
+  // Plastic box parameters
   //
-  G4double tef_thick = 5.1*mm;
+  G4double box_thick = 5.1*mm;
   G4double int_boxXY = 69*mm, int_boxZ = 150*mm;
-  G4Material* tef_mat = nist->FindOrBuildMaterial("G4_TEFLON");
+  G4Material* box_mat = nist->FindOrBuildMaterial("G4_TEFLON");
+  box_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Teflon());
+  //G4Material* box_mat = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
+  //box_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Polyethylene());
+  //G4Material* box_mat = nist->FindOrBuildMaterial("G4_POLYPROPYLENE");
+  //box_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Polypropylene());
+  
    
   // Option to switch on/off checking of volumes overlaps
   //
@@ -75,9 +82,10 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   //     
   // World
   //
-  G4double world_sizeXY = 1.2*(int_boxXY + 2*tef_thick);
-  G4double world_sizeZ  = 1.2*(int_boxZ + tef_thick);
+  G4double world_sizeXY = 1.2*(int_boxXY + 2*box_thick);
+  G4double world_sizeZ  = 1.2*(int_boxZ + box_thick);
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
+  world_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Air());
   
   G4Box* solidWorld =    
     new G4Box("World",                       //its name
@@ -116,9 +124,9 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4LogicalVolume* logicBox =                         
     new G4LogicalVolume(solidBox,            // its solid
-                        tef_mat,             // its material
+                        box_mat,             // its material
                         "Box");              // its name
-               
+
   new G4PVPlacement(0,                       // no rotation
                     G4ThreeVector(),         // at (0,0,0)
                     logicBox,                // its logical volume
