@@ -70,8 +70,12 @@ void TestSimSteppingAction::UserSteppingAction(const G4Step* step)
   if (volume != fScoringVolume) return;
 
   // collect energy deposited in this step
-  G4double edepStep = step->GetTotalEnergyDeposit();
-  fEventAction->AddEdep(edepStep);  
+  //G4double edepStep = step->GetTotalEnergyDeposit();
+  //fEventAction->AddEdep(edepStep);
+
+  // Increment photon count in PMT and kill associated track 
+  fEventAction->FirePMT();
+  step->GetTrack()->SetTrackStatus(fStopAndKill);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

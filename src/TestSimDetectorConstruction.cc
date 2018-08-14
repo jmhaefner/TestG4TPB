@@ -41,6 +41,7 @@
 #include "G4Trd.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
+#include "G4SubtractionSolid.hh"
 #include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -106,12 +107,21 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                       checkOverlaps);        //overlaps checking
                      
   //     
-  // Plastic box
-  //  
-  G4Box* solidBox =    
-    new G4Box("Box",                         // its name
-        0.5*(int_boxXY + 2*box_thick), 0.5*(int_boxXY + 2*box_thick), 0.5*(int_boxZ + box_thick)); //its size
+  // Teflon box
+  //
+  G4Box* fullBox =    
+    new G4Box("fullBox",                         // its name
+        0.5*(int_boxXY + 2*tef_thick), 0.5*(int_boxXY + 2*tef_thick), 
+        0.5*(int_boxZ + tef_thick)); //its size
       
+  G4Box* hollow =
+    new G4Box("hollow",
+        0.5*int_boxXY, 0.5*int_boxXY, 0.5*int_boxZ);
+
+  G4VSolid* solidBox = 
+    new G4SubtractionSolid("Box", fullBox, hollow,
+        0, G4ThreeVector(0,0,-tef_thick/2-0.01*mm));
+
   G4LogicalVolume* logicBox =                         
     new G4LogicalVolume(solidBox,            // its solid
                         box_mat,             // its material
@@ -126,41 +136,25 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
 
-  //
-  // Box of air inside plastic box
-  //
-  G4Material* hollow_mat = nist->FindOrBuildMaterial("G4_AIR");
-  hollow_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Air());
-
-  G4Box* hollow = 
-    new G4Box("Hollow",
-        0.5*int_boxXY, 0.5*int_boxXY, 0.5*int_boxZ);
-
-  G4LogicalVolume* logicHollow = 
-    new G4LogicalVolume(hollow,
-                        hollow_mat,
-                        "Hollow");
-
-  new G4PVPlacement(0,
-                    G4ThreeVector(0,0,-box_thick/2-0.01*mm),
-                    logicHollow,
-                    "Hollow",
-                    logicBox,
-                    false,
-                    0,
-                    checkOverlaps);
 
   //     
   // Copper heat sink
   // 
-
   G4double PMT_Z = -int_boxZ/2;
  
   G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_Cu");
 
-  G4Box* solidCu =
-    new G4Box("Cu",                          // its name
+  G4Box* fullCu =
+    new G4Box("fullCu",                          // its name
         33*mm/2, 33*mm/2, 2.5*mm/2);         // its size
+
+  G4VSolid* holeCu =
+    new G4Tubs("holeCu",                       // its name
+        0,30*mm, 2.5*mm/2, 0.0*deg, 360.0*deg);      // its size
+
+  G4VSolid* solidCu =
+    new G4SubtractionSolid("Cu", fullCu, holeCu,
+        0, G4ThreeVector(33*mm/2, 33*mm/2, 0));
 
   G4LogicalVolume* logicCu =
     new G4LogicalVolume(solidCu,             // its solid
@@ -168,7 +162,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         "Cu");               // its name
 
   new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(-30*mm/2,-30*mm/2,PMT_Z),         // at (0,0,0)
+                    G4ThreeVector(-33*mm/2,-33*mm/2,PMT_Z),  // at (0,0,0)
                     logicCu,                 // its logical volume
                     "Cu",                    // its name
                     logicBox,                // its mother  volume
@@ -177,29 +171,30 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     checkOverlaps);          // overlaps checking
                         
   //
-  // Hole in copper
+  // Air volume for PMT 
   //
-  G4VSolid* solidHole = 
-    new G4Tubs("Hole",                       // its name
-        0,30*mm, 2.5*mm/2, 180.0*deg,90.0*deg);      // its size
+  G4VSolid* solidPMT =
+    new G4Tubs("PMT",                       // its name
+        0,30*mm, 5*mm/2, 0.0*deg, 360.0*deg);      // its size
 
-  G4LogicalVolume* logicHole = 
-    new G4LogicalVolume(solidHole,           // its solid
-                        hollow_mat,          // its material
-                        "Hole");             // its name
+  G4LogicalVolume* logicPMT =
+    new G4LogicalVolume(solidPMT,           // its solid
+                        world_mat,          // its material
+                        "PMT");             // its name
 
   new G4PVPlacement(0,
-                    G4ThreeVector(33*mm/2, 33*mm/2, 0),
-                    logicHole,
-                    "Hole",
-                    logicCu,
+                    G4ThreeVector(0, 0, PMT_Z+2.5*mm),
+                    logicPMT,
+                    "PMT",
+                    logicBox,
                     false,
                     0,
                     checkOverlaps);
- 
+
+  //
   // scoring volume
   //
-  fScoringVolume = logicBox;
+  fScoringVolume = logicPMT;
 
   //
   //always return the physical World

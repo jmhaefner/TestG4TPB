@@ -48,11 +48,11 @@ class TestSimEventAction : public G4UserEventAction
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
-    void AddEdep(G4double edep) { fEdep += edep; }
+    void FirePMT() { fNphoton ++; }
 
   private:
     TestSimRunAction* fRunAction;
-    G4double     fEdep;
+    G4double     fNphoton;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
