@@ -1,6 +1,8 @@
 #include <globals.hh>
-#include <CLHEP/Units/SystemofUnits.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 #include <CLHEP/Units/PhysicalConstants.h>
+//#include <SystemofUnits.h>
+//#include <PhysicalConstants.h>
 
 class G4MaterialPropertiesTable;
 
