@@ -111,16 +111,16 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   //
   G4Box* fullBox =    
     new G4Box("fullBox",                         // its name
-        0.5*(int_boxXY + 2*tef_thick), 0.5*(int_boxXY + 2*tef_thick), 
-        0.5*(int_boxZ + tef_thick)); //its size
-      
+        0.5*(int_boxXY + 2*box_thick), 0.5*(int_boxXY + 2*box_thick), 
+        0.5*(int_boxZ + box_thick)); //its size
+
   G4Box* hollow =
     new G4Box("hollow",
         0.5*int_boxXY, 0.5*int_boxXY, 0.5*int_boxZ);
 
   G4VSolid* solidBox = 
     new G4SubtractionSolid("Box", fullBox, hollow,
-        0, G4ThreeVector(0,0,-tef_thick/2-0.01*mm));
+        0, G4ThreeVector(0,0,-box_thick/2-0.01*mm));
 
   G4LogicalVolume* logicBox =                         
     new G4LogicalVolume(solidBox,            // its solid
