@@ -43,6 +43,8 @@
 #include "G4PVPlacement.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalBorderSurface.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -127,7 +129,8 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         box_mat,             // its material
                         "Box");              // its name
 
-  new G4PVPlacement(0,                       // no rotation
+  G4VPhysicalVolume* physBox = 
+    new G4PVPlacement(0,                       // no rotation
                     G4ThreeVector(),         // at (0,0,0)
                     logicBox,                // its logical volume
                     "Box",                   // its name
@@ -136,6 +139,18 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
 
+  //
+  // Plastic box optical surface
+  //
+  G4OpticalSurface* boxSurface =  new G4OpticalSurface("boxSurface");
+  
+  new G4LogicalBorderSurface("boxSurface", physWorld, physBox, boxSurface);
+
+  // these options are not sacred
+  boxSurface->SetType(dielectric_metal);
+  boxSurface->SetFinish(ground);
+  boxSurface->SetModel(unified); 
+  boxSurface->SetMaterialPropertiesTable(OpticalMaterialProperties::Teflon());
 
   //     
   // Copper heat sink
