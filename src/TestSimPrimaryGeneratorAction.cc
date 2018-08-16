@@ -31,6 +31,9 @@
 #include "TestSimPrimaryGeneratorAction.hh"
 
 #include "G4LogicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4SolidStore.hh"
+#include "G4VPhysicalVolume.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Box.hh"
 #include "G4RunManager.hh"
@@ -45,10 +48,11 @@
 TestSimPrimaryGeneratorAction::TestSimPrimaryGeneratorAction()
 : G4VUserPrimaryGeneratorAction(),
   fParticleGun(0), 
-  fEnvelopeBox(0)
+  fCopperThickness(0)
 {
   G4int n_particle = 1;
   fParticleGun  = new G4ParticleGun(n_particle);
+  fCopperTranslation = G4ThreeVector();
 
   // default particle kinematic
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -78,23 +82,21 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
   
-  G4double envSizeXY = 0;
-  G4double envSizeZ = 0;
 
-  if (!fEnvelopeBox)
-  {
-    G4LogicalVolume* envLV
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("Box");
-    if ( envLV ) fEnvelopeBox = dynamic_cast<G4Box*>(envLV->GetSolid());
+  G4VPhysicalVolume* CuPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("Cu");
+  if ( CuPV ) {
+      fCopperTranslation = CuPV->GetObjectTranslation();
   }
 
-  if ( fEnvelopeBox ) {
-    envSizeXY = fEnvelopeBox->GetXHalfLength()*2.;
-    envSizeZ = fEnvelopeBox->GetZHalfLength()*2.;
-  }  
+  if (!(fCopperTranslation.getX() == 0. && fCopperTranslation.getY() == 0. && fCopperTranslation.getZ() == 0))
+  {
+      G4Box* CopperBox = dynamic_cast<G4Box*>(G4SolidStore::GetInstance()->GetSolid("fullCu"));
+      fCopperThickness = CopperBox->GetZHalfLength()*2.;
+  }
+
   else  {
     G4ExceptionDescription msg;
-    msg << "Envelope volume of box shape not found.\n"; 
+    msg << "Couldn't find the copper piece named Cu.\n"; 
     msg << "Perhaps you have changed geometry.\n";
     msg << "The gun will be place at the center.";
     G4Exception("TestSimPrimaryGeneratorAction::GeneratePrimaries()",
@@ -108,9 +110,10 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // of the (X,Y) of the box
   //G4double x0 = 0.06*envSizeXY;
   //G4double y0 = 0.06*envSizeXY;
-  G4double x0 = 0.0;
-  G4double y0 = 0.0;
-  G4double z0 = -0.75 * envSizeZ;
+  G4double x0 = fCopperTranslation.getX();
+  G4double y0 = fCopperTranslation.getY();
+  G4double copperZ = fCopperTranslation.getZ();
+  G4double z0 = copperZ + (fCopperThickness/2.);
   
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
   //G4RandGauss* gaussian(0.0,1.0);
