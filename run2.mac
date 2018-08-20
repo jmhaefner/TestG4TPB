@@ -13,10 +13,10 @@
 # 10000 events
 #
 /gun/particle opticalphoton
-/gun/energy 6 MeV
+/gun/energy 3 eV
 #
 /run/printProgress 100
-/run/beamOn 1000
+/run/beamOn 100
 # 
 # proton 210 MeV to the direction (0.,0.,1.)
 # 1000 events
