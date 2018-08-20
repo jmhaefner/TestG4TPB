@@ -114,21 +114,23 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double y0 = fCopperTranslation.getY();
   G4double copperZ = fCopperTranslation.getZ();
   G4double z0 = copperZ + (fCopperThickness/2.);
+
   
-  fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
-  //G4RandGauss* gaussian(0.0,1.0);
-  // The gaussian from which we sample theta below has std dev of 0.445 in order
-  // to place the full width half max (= 2.355*sigma) at +/- 60 degrees (pi/3 rad)
-  G4RandGauss* gaussian = new G4RandGauss(CLHEP::HepRandom::getTheEngine(),0.0,0.445);
+  G4double sigma = 0.445;
   // "azimuthal" angle w.r.t. z-axis:
-  G4double theta = gaussian->shoot();
+  G4double theta = abs(G4RandGauss::shoot(0.,sigma));
   // polar angle in the x-y plane:
   G4double phi = G4UniformRand()*2*CLHEP::pi;
   // now calculate the momentum components:
-  G4double px = cos(theta)*cos(phi);
-  G4double py = sin(theta);
-  G4double pz = cos(theta)*sin(phi);
+  G4double px = sin(theta)*cos(phi);
+  G4double py = sin(theta)*sin(phi);
+  G4double pz = cos(theta);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px,py,pz));
+  fParticleGun->SetParticlePosition(G4ThreeVector(x0*mm,y0*mm,z0*mm));
+  //fParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
+  //G4RandGauss* gaussian(0.0,1.0);
+  // The gaussian from which we sample theta below has std dev of 0.445 in order
+  // to place the full width half max (= 2.355*sigma) at +/- 60 degrees (pi/3 rad)
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

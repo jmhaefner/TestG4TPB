@@ -178,7 +178,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4VPhysicalVolume* physCu = 
   new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(-33*mm/2,-33*mm/2,PMT_Z),  // at (0,0,0)
+                    G4ThreeVector(-33*mm/2,-33*mm/2,PMT_Z*mm),  // at (0,0,0)
                     logicCu,                 // its logical volume
                     "Cu",                    // its name
                     logicBox,                // its mother  volume
