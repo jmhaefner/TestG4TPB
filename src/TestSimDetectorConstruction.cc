@@ -176,9 +176,22 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         Cu_mat,              // its material
                         "Cu");               // its name
 
+  // specify the angle w.r.t. the +x-axis (about the +z-axis) 
+  // at which the copper piece should be positioned
+  G4double rot = 90.;
+  G4double offset = 135.; // angle by which copper piece needs to be rotated about its own axis
+  // build the rotation matrix for the copper piece
+  G4RotationMatrix rotm = G4RotationMatrix();
+  rotm.rotateZ((rot+offset)*deg);
+  // center of copper piece needs to be 23.33 mm from center of PMT in order to be
+  // correctly positioned
+  G4double cu_radius = 23.33;
+  G4ThreeVector position = G4ThreeVector(cu_radius*std::cos(rot*deg)*mm, cu_radius*std::sin(rot*deg)*mm, PMT_Z*mm);
+  // create the overall transform
+  G4Transform3D transform = G4Transform3D(rotm, position);
+
   G4VPhysicalVolume* physCu = 
-  new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(-33*mm/2,-33*mm/2,PMT_Z*mm),  // at (0,0,0)
+  new G4PVPlacement(transform,               // rotation and position
                     logicCu,                 // its logical volume
                     "Cu",                    // its name
                     logicBox,                // its mother  volume
