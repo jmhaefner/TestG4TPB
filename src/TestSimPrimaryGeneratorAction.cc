@@ -129,7 +129,7 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   
   G4double sigma = 0.445;
   // "azimuthal" angle w.r.t. z-axis:
-  G4double theta = abs(G4RandGauss::shoot(0.,sigma));
+  G4double theta = std::abs(G4RandGauss::shoot(0.,sigma));
   // polar angle in the x-y plane:
   G4double phi = G4UniformRand()*2*CLHEP::pi;
   // now calculate the momentum components:

@@ -39,7 +39,8 @@
 TestSimEventAction::TestSimEventAction(TestSimRunAction* runAction)
 : G4UserEventAction(),
   fRunAction(runAction),
-  fNphoton(0.)
+  fNphoton(0.),
+  fNreflection(0.)
 {} 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -52,6 +53,7 @@ TestSimEventAction::~TestSimEventAction()
 void TestSimEventAction::BeginOfEventAction(const G4Event*)
 {    
   fNphoton = 0.;
+  fNreflection = 0.;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -60,6 +62,7 @@ void TestSimEventAction::EndOfEventAction(const G4Event*)
 {   
   // accumulate statistics in run action
   fRunAction->AddNphoton(fNphoton);
+  fRunAction->AddNreflection(fNreflection);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

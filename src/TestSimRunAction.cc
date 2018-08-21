@@ -46,12 +46,16 @@
 TestSimRunAction::TestSimRunAction()
 : G4UserRunAction(),
   fNphoton(0.),
-  fNphoton2(0.)
+  fNphoton2(0.),
+  fNreflection(0.),
+  fNreflection2(0.)
 { 
   // Register accumulable to the accumulable manager
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
   accumulableManager->RegisterAccumulable(fNphoton);
   accumulableManager->RegisterAccumulable(fNphoton2); 
+  accumulableManager->RegisterAccumulable(fNreflection);
+  accumulableManager->RegisterAccumulable(fNreflection2);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,14 +87,20 @@ void TestSimRunAction::EndOfRunAction(const G4Run* run)
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
   accumulableManager->Merge();
 
-  // Compute dose = total energy deposit in a run and its variance
+  // Compute number of absorbed photons and number of reflections (average and RMS)
   //
-  G4double Nphoton  = fNphoton.GetValue();
-  G4double Nphoton2 = fNphoton2.GetValue();
+  G4double Nphoton  = fNphoton.GetValue()/nofEvents;
+  G4double Nphoton2 = fNphoton2.GetValue()/nofEvents;
+
+  G4double Nreflection = fNreflection.GetValue()/nofEvents;
+  G4double Nreflection2 = fNreflection2.GetValue()/nofEvents;
   
-  // This seems weird
-  G4double rms = Nphoton2 - Nphoton*Nphoton;
-  if (rms > 0.) rms = std::sqrt(rms); else rms = 0.;  
+  G4double p_rms = Nphoton2 - Nphoton*Nphoton;
+  if (p_rms > 0.) p_rms = std::sqrt(p_rms); else p_rms = 0.;  
+
+  G4double r_rms = Nreflection2 - Nreflection*Nreflection;
+  if (r_rms > 0.) r_rms = std::sqrt(r_rms); else r_rms = 0.;
+  
 
   /*const TestSimDetectorConstruction* detectorConstruction
    = static_cast<const TestSimDetectorConstruction*>
@@ -131,7 +141,10 @@ void TestSimRunAction::EndOfRunAction(const G4Run* run)
      << " The run consists of " << nofEvents << " "<< runCondition
      << G4endl
      << " Cumulated PMT fires per event : " 
-     << Nphoton<< " +/- " << rms
+     << Nphoton<< " +/- " << p_rms
+     << G4endl
+     << " Cumulated photon incidences to box per event : "
+     << Nreflection<< " +/- " << r_rms
      << G4endl
      << "------------------------------------------------------------"
      << G4endl
@@ -146,6 +159,13 @@ void TestSimRunAction::AddNphoton(G4double Nphoton)
   fNphoton2 += Nphoton*Nphoton;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void TestSimRunAction::AddNreflection(G4double Nreflection)
+{
+  fNreflection  += Nreflection;
+  fNreflection2 += Nreflection*Nreflection;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

@@ -54,10 +54,13 @@ class TestSimRunAction : public G4UserRunAction
     virtual void   EndOfRunAction(const G4Run*);
 
     void AddNphoton (G4double Nphoton); 
+    void AddNreflection (G4double Nreflection);
 
   private:
     G4Accumulable<G4double> fNphoton;
     G4Accumulable<G4double> fNphoton2;
+    G4Accumulable<G4double> fNreflection;
+    G4Accumulable<G4double> fNreflection2;
 };
 
 #endif

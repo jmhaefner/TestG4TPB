@@ -50,7 +50,8 @@
 
 TestSimDetectorConstruction::TestSimDetectorConstruction()
 : G4VUserDetectorConstruction(),
-  fScoringVolume(0)
+  fScoringVolume(0),
+  fContactVolume(0)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -194,36 +195,44 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   new G4PVPlacement(transform,               // rotation and position
                     logicCu,                 // its logical volume
                     "Cu",                    // its name
-                    logicBox,                // its mother  volume
+                    logicWorld,                // its mother  volume
                     false,                   // no boolean operation
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
                         
   //
-  // Air volume for PMT 
+  // Lead volume for PMT 
   //
+  G4Material* pmt_mat = nist->FindOrBuildMaterial("G4_Pb");
+  pmt_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::PMT());
+  
   G4VSolid* solidPMT =
     new G4Tubs("PMT",                       // its name
         0,30*mm, 5*mm/2, 0.0*deg, 360.0*deg);      // its size
 
   G4LogicalVolume* logicPMT =
     new G4LogicalVolume(solidPMT,           // its solid
-                        world_mat,          // its material
+                        pmt_mat,          // its material
                         "PMT");             // its name
 
   new G4PVPlacement(0,
                     G4ThreeVector(0, 0, PMT_Z+2.5*mm),
                     logicPMT,
                     "PMT",
-                    logicBox,
+                    logicWorld,
                     false,
                     0,
                     checkOverlaps);
 
   //
-  // scoring volume
+  // Scoring volume
   //
   fScoringVolume = logicPMT;
+
+  //
+  // Contact volume
+  //
+  fContactVolume = logicBox;
 
   //
   //always return the physical World

@@ -44,3 +44,21 @@ G4MaterialPropertiesTable* OpticalMaterialProperties::Teflon()
 
   return teflon_mpt;
 }
+
+G4MaterialPropertiesTable* OpticalMaterialProperties::PMT()
+{
+    G4MaterialPropertiesTable* pmt_mpt = new G4MaterialPropertiesTable();
+
+    const G4int entries = 2;
+    G4double energy[entries] = {0.01*eV, 100.*eV};
+
+    // REFRACTIVE INDEX
+    G4double rindex[entries] = {1., 1.};
+    pmt_mpt->AddProperty("RINDEX", energy, rindex, entries);
+
+    // ABSORPTION LENGTH
+    G4double abslen[entries] = {0.01*mm, 0.01*mm};
+    pmt_mpt->AddProperty("ABSLENGTH", energy, abslen, entries);
+
+    return pmt_mpt;
+}
