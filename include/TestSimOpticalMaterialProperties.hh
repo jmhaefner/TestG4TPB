@@ -11,6 +11,7 @@ class OpticalMaterialProperties
     public:
         static G4MaterialPropertiesTable* Air();
         static G4MaterialPropertiesTable* Teflon();
+        static G4MaterialPropertiesTable* PMT();
 
     private:
         // Constructor (hidden)

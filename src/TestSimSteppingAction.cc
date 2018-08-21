@@ -61,21 +61,15 @@ void TestSimSteppingAction::UserSteppingAction(const G4Step* step)
     fScoringVolume = detectorConstruction->GetScoringVolume();   
   }
 
-  // get volume of the current step
-  G4LogicalVolume* volume 
-    = step->GetPreStepPoint()->GetTouchableHandle()
-      ->GetVolume()->GetLogicalVolume();
-      
-  // check if we are in scoring volume
+  // Get current volume
+  G4LogicalVolume* volume = step->GetPreStepPoint()
+    ->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+
+  // Check if we are in scoring volume
   if (volume != fScoringVolume) return;
 
-  // collect energy deposited in this step
-  //G4double edepStep = step->GetTotalEnergyDeposit();
-  //fEventAction->AddEdep(edepStep);
-
-  // Increment photon count in PMT and kill associated track 
+  // Increment photon count in PMT 
   fEventAction->FirePMT();
-  step->GetTrack()->SetTrackStatus(fStopAndKill);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

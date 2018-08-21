@@ -85,9 +85,12 @@ void TestSimRunAction::EndOfRunAction(const G4Run* run)
 
   // Compute dose = total energy deposit in a run and its variance
   //
-  G4double Nphoton  = fNphoton.GetValue();
-  G4double Nphoton2 = fNphoton2.GetValue();
+  G4double Nphoton  = fNphoton.GetValue()/nofEvents;
+  G4double Nphoton2 = fNphoton2.GetValue()/nofEvents;
   
+  G4cout
+    <<  "Nphoton: " << Nphoton << G4endl
+    <<  "Nphoton2: " << Nphoton2 << G4endl;
   // This seems weird
   G4double rms = Nphoton2 - Nphoton*Nphoton;
   if (rms > 0.) rms = std::sqrt(rms); else rms = 0.;  

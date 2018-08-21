@@ -110,15 +110,15 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // of the (X,Y) of the box
   //G4double x0 = 0.06*envSizeXY;
   //G4double y0 = 0.06*envSizeXY;
-  G4double x0 = fCopperTranslation.getX();
-  G4double y0 = fCopperTranslation.getY();
+  G4double x0 = fCopperTranslation.getX()-33/4*mm;
+  G4double y0 = fCopperTranslation.getY()-33/4*mm;
   G4double copperZ = fCopperTranslation.getZ();
   G4double z0 = copperZ + (fCopperThickness/2.);
 
   
   G4double sigma = 0.445;
   // "azimuthal" angle w.r.t. z-axis:
-  G4double theta = abs(G4RandGauss::shoot(0.,sigma));
+  G4double theta = std::abs(G4RandGauss::shoot(0.,sigma));
   // polar angle in the x-y plane:
   G4double phi = G4UniformRand()*2*CLHEP::pi;
   // now calculate the momentum components:

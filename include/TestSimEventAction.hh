@@ -48,7 +48,7 @@ class TestSimEventAction : public G4UserEventAction
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
-    void FirePMT() { fNphoton ++; }
+    void FirePMT() { fNphoton += 1.0; }
 
   private:
     TestSimRunAction* fRunAction;
