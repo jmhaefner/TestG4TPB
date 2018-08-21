@@ -48,9 +48,11 @@ class TestSimDetectorConstruction : public G4VUserDetectorConstruction
     virtual G4VPhysicalVolume* Construct();
     
     G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
+    G4LogicalVolume* GetContactVolume() const { return fContactVolume; }
 
   protected:
     G4LogicalVolume*  fScoringVolume;
+    G4LogicalVolume*  fContactVolume;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

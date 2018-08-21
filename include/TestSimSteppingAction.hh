@@ -53,6 +53,7 @@ class TestSimSteppingAction : public G4UserSteppingAction
   private:
     TestSimEventAction*  fEventAction;
     G4LogicalVolume* fScoringVolume;
+    G4LogicalVolume* fContactVolume;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

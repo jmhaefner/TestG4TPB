@@ -42,7 +42,8 @@
 TestSimSteppingAction::TestSimSteppingAction(TestSimEventAction* eventAction)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
-  fScoringVolume(0)
+  fScoringVolume(0),
+  fContactVolume(0)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -54,11 +55,15 @@ TestSimSteppingAction::~TestSimSteppingAction()
 
 void TestSimSteppingAction::UserSteppingAction(const G4Step* step)
 {
-  if (!fScoringVolume) { 
+  if (!fScoringVolume || !fContactVolume) { 
     const TestSimDetectorConstruction* detectorConstruction
       = static_cast<const TestSimDetectorConstruction*>
         (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    fScoringVolume = detectorConstruction->GetScoringVolume();   
+    
+    if (!fScoringVolume)
+        fScoringVolume = detectorConstruction->GetScoringVolume(); 
+    if (!fContactVolume)
+        fContactVolume = detectorConstruction->GetContactVolume();  
   }
 
   // Get current volume
@@ -66,10 +71,10 @@ void TestSimSteppingAction::UserSteppingAction(const G4Step* step)
     ->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
   // Check if we are in scoring volume
-  if (volume != fScoringVolume) return;
+  if (volume == fScoringVolume) fEventAction->FirePMT();
 
-  // Increment photon count in PMT 
-  fEventAction->FirePMT();
+  // Check if we are in the contact volume
+  if (volume == fContactVolume) fEventAction->CountReflection();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

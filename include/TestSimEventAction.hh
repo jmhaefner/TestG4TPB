@@ -49,10 +49,12 @@ class TestSimEventAction : public G4UserEventAction
     virtual void EndOfEventAction(const G4Event* event);
 
     void FirePMT() { fNphoton += 1.0; }
+    void CountReflection() { fNreflection += 1.0; }
 
   private:
     TestSimRunAction* fRunAction;
     G4double     fNphoton;
+    G4double     fNreflection;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

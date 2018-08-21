@@ -50,7 +50,8 @@
 
 TestSimDetectorConstruction::TestSimDetectorConstruction()
 : G4VUserDetectorConstruction(),
-  fScoringVolume(0)
+  fScoringVolume(0),
+  fContactVolume(0)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -211,9 +212,14 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     checkOverlaps);
 
   //
-  // scoring volume
+  // Scoring volume
   //
   fScoringVolume = logicPMT;
+
+  //
+  // Contact volume
+  //
+  fContactVolume = logicBox;
 
   //
   //always return the physical World
