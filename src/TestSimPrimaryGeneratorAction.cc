@@ -28,6 +28,8 @@
 /// \file TestSimPrimaryGeneratorAction.cc
 /// \brief Implementation of the TestSimPrimaryGeneratorAction class
 
+#include <cmath>
+#include <typeinfo>
 #include "TestSimPrimaryGeneratorAction.hh"
 
 #include "G4LogicalVolumeStore.hh"
@@ -110,8 +112,17 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // of the (X,Y) of the box
   //G4double x0 = 0.06*envSizeXY;
   //G4double y0 = 0.06*envSizeXY;
-  G4double x0 = fCopperTranslation.getX();
-  G4double y0 = fCopperTranslation.getY();
+  G4double cu_x0 = fCopperTranslation.getX();
+  G4double cu_y0 = fCopperTranslation.getY();
+  G4double cu_radius = std::sqrt(std::pow(cu_x0,2) + std::pow(cu_y0,2));
+
+  G4double hole_radius = cu_radius + 15; // assume the hole for LED is 10 mm into the copper piece
+
+  //G4double x0 = cu_x0;
+  //G4double y0 = cu_y0;
+  G4double x0 = hole_radius*(cu_x0/cu_radius); // cu_x0/cu_radius is cos(angle b/w x-axis and radius vector of cu)
+  G4double y0 = hole_radius*(cu_y0/cu_radius); // same idea as above, but with sin(angle)
+
   G4double copperZ = fCopperTranslation.getZ();
   G4double z0 = copperZ + (fCopperThickness/2.);
 
