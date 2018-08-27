@@ -68,6 +68,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   
   // Plastic box parameters
   //
+  G4double separation_z = 0.*mm; // how far from PMT face?
   G4double box_thick = 5.1*mm;
   G4double int_boxXY = 69*mm, int_boxZ = 150*mm;
   G4Material* box_mat = nist->FindOrBuildMaterial("G4_TEFLON");
@@ -86,7 +87,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // World
   //
   G4double world_sizeXY = 1.2*(int_boxXY + 2*box_thick);
-  G4double world_sizeZ  = 1.2*(int_boxZ + box_thick);
+  G4double world_sizeZ  = 3.*(int_boxZ + box_thick);
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
   world_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Air());
   
@@ -132,7 +133,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4VPhysicalVolume* physBox = 
     new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(),         // at (0,0,0)
+                    G4ThreeVector(0.,0.,0.5*(int_boxZ + box_thick)+separation_z), // box opening at (0,0,separation_z)
                     logicBox,                // its logical volume
                     "Box",                   // its name
                     logicWorld,              // its mother  volume
@@ -153,10 +154,36 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   boxSurface->SetModel(unified); 
   boxSurface->SetMaterialPropertiesTable(OpticalMaterialProperties::Teflon());
 
+  //G4double PMT_Z = -int_boxZ/2;
+  
+  //
+  // Lead volume for PMT 
+  //
+  G4double PMT_radius = 30.*mm;
+  G4double PMT_thick = 5.*mm;
+  G4Material* pmt_mat = nist->FindOrBuildMaterial("G4_Pb");
+  pmt_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::PMT());
+  
+  G4VSolid* solidPMT =
+    new G4Tubs("PMT",                       // its name
+        0, PMT_radius, PMT_thick/2, 0.0*deg, 360.0*deg);      // its size
+
+  G4LogicalVolume* logicPMT =
+    new G4LogicalVolume(solidPMT,           // its solid
+                        pmt_mat,          // its material
+                        "PMT");             // its name
+
+  new G4PVPlacement(0,
+                    G4ThreeVector(0, 0, -PMT_thick/2), // face of PMT at (0,0,0)
+                    logicPMT,
+                    "PMT",
+                    logicWorld,
+                    false,
+                    0,
+                    checkOverlaps);
   //     
   // Copper heat sink
   // 
-  G4double PMT_Z = -int_boxZ/2;
  
   G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_Cu");
 
@@ -179,15 +206,15 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   // specify the angle w.r.t. the +x-axis (about the +z-axis) 
   // at which the copper piece should be positioned
-  G4double rot = 135;
-  G4double offset = 135.; // angle by which copper piece needs to be rotated about its own axis
+  G4double rot = 135.;
+  G4double offset = 135.; // copper rotation angle
   // build the rotation matrix for the copper piece
   G4RotationMatrix rotm = G4RotationMatrix();
   rotm.rotateZ((rot+offset)*deg);
   // center of copper piece needs to be 23.33 mm from center of PMT in order to be
   // correctly positioned
   G4double cu_radius = 23.33;
-  G4ThreeVector position = G4ThreeVector(cu_radius*std::cos(rot*deg)*mm, cu_radius*std::sin(rot*deg)*mm, PMT_Z*mm);
+  G4ThreeVector position = G4ThreeVector(cu_radius*std::cos(rot*deg)*mm, cu_radius*std::sin(rot*deg)*mm, -PMT_thick/2);
   // create the overall transform
   G4Transform3D transform = G4Transform3D(rotm, position);
 
@@ -199,30 +226,19 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     false,                   // no boolean operation
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
-                        
   //
-  // Lead volume for PMT 
+  // Copper mount optical surface
   //
-  G4Material* pmt_mat = nist->FindOrBuildMaterial("G4_Pb");
-  pmt_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::PMT());
+  G4OpticalSurface* cuSurface =  new G4OpticalSurface("cuSurface");
   
-  G4VSolid* solidPMT =
-    new G4Tubs("PMT",                       // its name
-        0,30*mm, 5*mm/2, 0.0*deg, 360.0*deg);      // its size
+  new G4LogicalBorderSurface("cuSurface", physWorld, physCu, cuSurface);
 
-  G4LogicalVolume* logicPMT =
-    new G4LogicalVolume(solidPMT,           // its solid
-                        pmt_mat,          // its material
-                        "PMT");             // its name
-
-  new G4PVPlacement(0,
-                    G4ThreeVector(0, 0, PMT_Z+2.5*mm),
-                    logicPMT,
-                    "PMT",
-                    logicWorld,
-                    false,
-                    0,
-                    checkOverlaps);
+  // these options are not sacred
+  cuSurface->SetType(dielectric_metal);
+  cuSurface->SetFinish(ground);
+  cuSurface->SetModel(unified); 
+  //cuSurface->SetMaterialPropertiesTable(OpticalMaterialProperties::Copper());
+                        
 
   //
   // Scoring volume
