@@ -36,6 +36,7 @@
 #include "globals.hh"
 
 class G4Run;
+class TestSimAnalysisManager;
 
 /// Run action class
 ///
@@ -46,21 +47,15 @@ class G4Run;
 class TestSimRunAction : public G4UserRunAction
 {
   public:
-    TestSimRunAction();
+    TestSimRunAction(TestSimAnalysisManager* ana);
     virtual ~TestSimRunAction();
 
     // virtual G4Run* GenerateRun();
     virtual void BeginOfRunAction(const G4Run*);
     virtual void   EndOfRunAction(const G4Run*);
 
-    void AddNphoton (G4double Nphoton); 
-    void AddNreflection (G4double Nreflection);
-
   private:
-    G4Accumulable<G4double> fNphoton;
-    G4Accumulable<G4double> fNphoton2;
-    G4Accumulable<G4double> fNreflection;
-    G4Accumulable<G4double> fNreflection2;
+    TestSimAnalysisManager* fAnalysisManager;
 };
 
 #endif

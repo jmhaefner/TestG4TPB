@@ -179,7 +179,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   // specify the angle w.r.t. the +x-axis (about the +z-axis) 
   // at which the copper piece should be positioned
-  G4double rot = 90.;
+  G4double rot = 135;
   G4double offset = 135.; // angle by which copper piece needs to be rotated about its own axis
   // build the rotation matrix for the copper piece
   G4RotationMatrix rotm = G4RotationMatrix();

@@ -30,18 +30,29 @@
 
 #include "TestSimEventAction.hh"
 #include "TestSimRunAction.hh"
+#include "TestSimAnalysisManager.hh"
 
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TestSimEventAction::TestSimEventAction(TestSimRunAction* runAction)
+TestSimEventAction::TestSimEventAction(TestSimRunAction* runAction, 
+                                       TestSimAnalysisManager* analysisManager)
 : G4UserEventAction(),
   fRunAction(runAction),
-  fNphoton(0.),
-  fNreflection(0.)
-{} 
+  fAnalysisManager(analysisManager)
+{
+  fPrimaryEnergy = 0.;
+  fPrimaryTheta = 0.;
+  fPrimaryPhi = 0.;
+  fWLSabsorbed = 0;
+  fNemitted = 0.;
+  fPMThits = 0.;
+  fPlasticReflections = 0.;
+  fPlasticAbsorbed = 0.;
+  fAirScatters = 0.;
+} 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -52,17 +63,25 @@ TestSimEventAction::~TestSimEventAction()
 
 void TestSimEventAction::BeginOfEventAction(const G4Event*)
 {    
-  fNphoton = 0.;
-  fNreflection = 0.;
+  fPrimaryEnergy = 0.;
+  fPrimaryTheta = 0.;
+  fPrimaryPhi = 0.;
+  fWLSabsorbed = 0;
+  fNemitted = 0.;
+  fPMThits = 0.;
+  fPlasticReflections = 0.;
+  fPlasticAbsorbed = 0.;
+  fAirScatters = 0.;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void TestSimEventAction::EndOfEventAction(const G4Event*)
-{   
-  // accumulate statistics in run action
-  fRunAction->AddNphoton(fNphoton);
-  fRunAction->AddNreflection(fNreflection);
+{  
+  // Fill analysis tree 
+  fAnalysisManager->FillNtuple(fPrimaryEnergy, fPrimaryTheta, fPrimaryPhi, 
+                    fWLSabsorbed, fNemitted, fPMThits,
+                    fPlasticReflections, fPlasticAbsorbed, fAirScatters);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
