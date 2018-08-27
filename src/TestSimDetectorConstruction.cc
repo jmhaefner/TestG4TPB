@@ -179,8 +179,8 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   // specify the angle w.r.t. the +x-axis (about the +z-axis) 
   // at which the copper piece should be positioned
-  G4double rot = 90.;
-  G4double offset = 135.; // angle by which copper piece needs to be rotated about its own axis
+  G4double rot = 135.;
+  G4double offset = 135.; // copper rotation angle
   // build the rotation matrix for the copper piece
   G4RotationMatrix rotm = G4RotationMatrix();
   rotm.rotateZ((rot+offset)*deg);
@@ -199,6 +199,18 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     false,                   // no boolean operation
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
+  //
+  // Copper mount optical surface
+  //
+  G4OpticalSurface* cuSurface =  new G4OpticalSurface("cuSurface");
+  
+  new G4LogicalBorderSurface("cuSurface", physWorld, physCu, cuSurface);
+
+  // these options are not sacred
+  cuSurface->SetType(dielectric_metal);
+  cuSurface->SetFinish(ground);
+  cuSurface->SetModel(unified); 
+  //cuSurface->SetMaterialPropertiesTable(OpticalMaterialProperties::Copper());
                         
   //
   // Lead volume for PMT 

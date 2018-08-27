@@ -12,6 +12,7 @@ class OpticalMaterialProperties
         static G4MaterialPropertiesTable* Air();
         static G4MaterialPropertiesTable* Teflon();
         static G4MaterialPropertiesTable* PMT();
+        static G4MaterialPropertiesTable* Copper();
 
     private:
         // Constructor (hidden)
