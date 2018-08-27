@@ -62,3 +62,30 @@ G4MaterialPropertiesTable* OpticalMaterialProperties::PMT()
 
     return pmt_mpt;
 }
+
+// source: refractiveindex.info
+G4MaterialPropertiesTable* OpticalMaterialProperties::Copper()
+{
+    G4MaterialPropertiesTable* copper_mpt = new G4MaterialPropertiesTable();
+
+    const G4int entries = 2;
+    G4double energy[entries] = {2.5*eV, 124.*eV};
+    // so 10nm to 495nm
+    // but these all go from 188nm to 495nm:
+    
+    // reflectivity
+    G4double reflectivity[entries] = {0.32, 0.58};
+
+    // refractive index
+    G4double rindex[entries] = {0.94, 1.22};
+
+    // extinction coefficient
+    G4double extinction_coeff[entries] = {1.337, 2.56};
+
+    copper_mpt->AddProperty("REFLECTIVITY", energy, reflectivity, entries);
+    copper_mpt->AddProperty("RINDEX", energy, rindex, entries);
+    copper_mpt->AddProperty("EXTINCTION", energy, extinction_coeff, entries);
+
+    return copper_mpt;
+}
+
