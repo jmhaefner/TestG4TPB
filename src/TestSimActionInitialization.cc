@@ -33,6 +33,7 @@
 #include "TestSimRunAction.hh"
 #include "TestSimEventAction.hh"
 #include "TestSimSteppingAction.hh"
+#include "TestSimAnalysisManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -49,7 +50,8 @@ TestSimActionInitialization::~TestSimActionInitialization()
 
 void TestSimActionInitialization::BuildForMaster() const
 {
-  TestSimRunAction* runAction = new TestSimRunAction;
+  TestSimAnalysisManager* ana = new TestSimAnalysisManager();
+  TestSimRunAction* runAction = new TestSimRunAction(ana);
   SetUserAction(runAction);
 }
 
@@ -57,12 +59,16 @@ void TestSimActionInitialization::BuildForMaster() const
 
 void TestSimActionInitialization::Build() const
 {
+  // Analysis Manager
+  TestSimAnalysisManager* ana = new TestSimAnalysisManager();
+
+  // Actions
   SetUserAction(new TestSimPrimaryGeneratorAction);
 
-  TestSimRunAction* runAction = new TestSimRunAction;
+  TestSimRunAction* runAction = new TestSimRunAction(ana);
   SetUserAction(runAction);
   
-  TestSimEventAction* eventAction = new TestSimEventAction(runAction);
+  TestSimEventAction* eventAction = new TestSimEventAction(runAction, ana);
   SetUserAction(eventAction);
   
   SetUserAction(new TestSimSteppingAction(eventAction));

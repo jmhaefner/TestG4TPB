@@ -70,11 +70,24 @@ void TestSimSteppingAction::UserSteppingAction(const G4Step* step)
   G4LogicalVolume* volume = step->GetPreStepPoint()
     ->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
+  G4TrackStatus trackStatus = step->GetTrack()->GetTrackStatus();
+  
   // Check if we are in scoring volume
   if (volume == fScoringVolume) fEventAction->FirePMT();
 
   // Check if we are in the contact volume
-  if (volume == fContactVolume) fEventAction->CountReflection();
+  if (volume == fContactVolume) {
+    // Count photon is absorbed
+    if (trackStatus == fStopAndKill) {
+      G4cout << "Track died" << G4endl; 
+      fEventAction->PlasticAbsorbed();
+    }
+    // Count photon reflected
+    else { 
+      G4cout << "Track lives" << G4endl;
+      fEventAction->CountPlasticReflection();
+    }
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

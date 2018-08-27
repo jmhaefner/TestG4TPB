@@ -31,7 +31,7 @@
 #include "TestSimRunAction.hh"
 #include "TestSimPrimaryGeneratorAction.hh"
 #include "TestSimDetectorConstruction.hh"
-// #include "TestSimRun.hh"
+#include "TestSimAnalysisManager.hh"
 
 #include "G4RunManager.hh"
 #include "G4Run.hh"
@@ -43,20 +43,10 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TestSimRunAction::TestSimRunAction()
+TestSimRunAction::TestSimRunAction(TestSimAnalysisManager* ana)
 : G4UserRunAction(),
-  fNphoton(0.),
-  fNphoton2(0.),
-  fNreflection(0.),
-  fNreflection2(0.)
-{ 
-  // Register accumulable to the accumulable manager
-  G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-  accumulableManager->RegisterAccumulable(fNphoton);
-  accumulableManager->RegisterAccumulable(fNphoton2); 
-  accumulableManager->RegisterAccumulable(fNreflection);
-  accumulableManager->RegisterAccumulable(fNreflection2);
-}
+  fAnalysisManager(ana)
+{}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -70,10 +60,7 @@ void TestSimRunAction::BeginOfRunAction(const G4Run*)
   // inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
-  // reset accumulables to their initial values
-  G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-  accumulableManager->Reset();
-
+  fAnalysisManager->Book();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,24 +70,6 @@ void TestSimRunAction::EndOfRunAction(const G4Run* run)
   G4int nofEvents = run->GetNumberOfEvent();
   if (nofEvents == 0) return;
 
-  // Merge accumulables 
-  G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-  accumulableManager->Merge();
-
-  // Compute number of absorbed photons and number of reflections (average and RMS)
-  //
-  G4double Nphoton  = fNphoton.GetValue()/nofEvents;
-  G4double Nphoton2 = fNphoton2.GetValue()/nofEvents;
-
-  G4double Nreflection = fNreflection.GetValue()/nofEvents;
-  G4double Nreflection2 = fNreflection2.GetValue()/nofEvents;
-  
-  G4double p_rms = Nphoton2 - Nphoton*Nphoton;
-  if (p_rms > 0.) p_rms = std::sqrt(p_rms); else p_rms = 0.;  
-
-  G4double r_rms = Nreflection2 - Nreflection*Nreflection;
-  if (r_rms > 0.) r_rms = std::sqrt(r_rms); else r_rms = 0.;
-  
 
   /*const TestSimDetectorConstruction* detectorConstruction
    = static_cast<const TestSimDetectorConstruction*>
@@ -135,36 +104,8 @@ void TestSimRunAction::EndOfRunAction(const G4Run* run)
      << G4endl
      << "--------------------End of Local Run------------------------";
   }
-  
-  G4cout
-     << G4endl
-     << " The run consists of " << nofEvents << " "<< runCondition
-     << G4endl
-     << " Cumulated PMT fires per event : " 
-     << Nphoton<< " +/- " << p_rms
-     << G4endl
-     << " Cumulated photon incidences to box per event : "
-     << Nreflection<< " +/- " << r_rms
-     << G4endl
-     << "------------------------------------------------------------"
-     << G4endl
-     << G4endl;
-}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void TestSimRunAction::AddNphoton(G4double Nphoton)
-{
-  fNphoton  += Nphoton;
-  fNphoton2 += Nphoton*Nphoton;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void TestSimRunAction::AddNreflection(G4double Nreflection)
-{
-  fNreflection  += Nreflection;
-  fNreflection2 += Nreflection*Nreflection;
+  fAnalysisManager->Save();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

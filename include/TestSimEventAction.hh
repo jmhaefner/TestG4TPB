@@ -35,6 +35,7 @@
 #include "globals.hh"
 
 class TestSimRunAction;
+class TestSimAnalysisManager;
 
 /// Event action class
 ///
@@ -42,19 +43,35 @@ class TestSimRunAction;
 class TestSimEventAction : public G4UserEventAction
 {
   public:
-    TestSimEventAction(TestSimRunAction* runAction);
+    TestSimEventAction(TestSimRunAction* runAction, TestSimAnalysisManager* analysisManager);
     virtual ~TestSimEventAction();
 
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
-    void FirePMT() { fNphoton += 1.0; }
-    void CountReflection() { fNreflection += 1.0; }
+    void SetPrimaryEnergy(G4double e) { fPrimaryEnergy = e; }
+    void SetPrimaryTheta(G4double t) { fPrimaryTheta = t; }
+    void SetPrimaryPhi(G4double p) { fPrimaryPhi = p; }
+    void SetPrimaryAbsorbed() { fWLSabsorbed = 1; }
+    void AddSecondaryPhoton() { fNemitted += 1.0; }
+    void FirePMT() { fPMThits += 1.0; }
+    void CountPlasticReflection() { fPlasticReflections += 1.0; }
+    void PlasticAbsorbed() { fPlasticAbsorbed += 1.0; }
+    void AirScatter() { fAirScatters += 1.0; }
 
   private:
     TestSimRunAction* fRunAction;
-    G4double     fNphoton;
-    G4double     fNreflection;
+    TestSimAnalysisManager* fAnalysisManager;
+
+    G4double    fPrimaryEnergy;
+    G4double    fPrimaryTheta;
+    G4double    fPrimaryPhi;
+    G4int       fWLSabsorbed;
+    G4double    fNemitted;
+    G4double    fPMThits;
+    G4double    fPlasticReflections;
+    G4double    fPlasticAbsorbed;
+    G4double    fAirScatters;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
