@@ -43,6 +43,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4PhysicalConstants.hh"
 #include "Randomize.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -140,9 +141,11 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   fParticleGun->SetParticlePosition(G4ThreeVector(x0*mm,y0*mm,z0*mm));
   
   // model the spectrum of the LED
-  G4double central_energy = 4.275*eV; // 290 nm
-  G4double energy_spread = 0.075*eV; // FWHM 12 nm
-  G4double energy = std::abs(G4RandGauss::shoot(central_energy, energy_spread));
+  G4double central_wl = 290.*nm;
+  G4double wl_spread = 5.1*nm; // FWHM 12 nm
+  G4double wl = std::abs(G4RandGauss::shoot(central_wl, wl_spread));
+  //G4double energy = (G4PhysicalConstants::h_Planck*G4PhysicalConstants::c_light)/wl;
+  G4double energy = (h_Planck*c_light)/wl;
   fParticleGun->SetParticleEnergy(energy);
   //fParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
   //G4RandGauss* gaussian(0.0,1.0);
