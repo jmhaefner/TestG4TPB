@@ -36,14 +36,18 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4LogicalVolume.hh"
+#include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 TestSimSteppingAction::TestSimSteppingAction(TestSimEventAction* eventAction)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
-  fScoringVolume(0),
-  fContactVolume(0)
+  fPMTvolume(0),
+  fPlasticVolume(0),
+  fWLSvolume(0),
+  fPhotonCatcherVolume(0),
+  fAirVolume(0)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -55,38 +59,63 @@ TestSimSteppingAction::~TestSimSteppingAction()
 
 void TestSimSteppingAction::UserSteppingAction(const G4Step* step)
 {
-  if (!fScoringVolume || !fContactVolume) { 
+  if (!(fPMTvolume && fPlasticVolume && fWLSvolume 
+        && fPhotonCatcherVolume && fAirVolume)) { 
+
     const TestSimDetectorConstruction* detectorConstruction
       = static_cast<const TestSimDetectorConstruction*>
         (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
     
-    if (!fScoringVolume)
-        fScoringVolume = detectorConstruction->GetScoringVolume(); 
-    if (!fContactVolume)
-        fContactVolume = detectorConstruction->GetContactVolume();  
+    if (!fPMTvolume)
+        fPMTvolume = detectorConstruction->GetPMTvolume(); 
+    if (!fPlasticVolume)
+        fPlasticVolume = detectorConstruction->GetPlasticVolume();
+    if (!fWLSvolume)
+        fWLSvolume = detectorConstruction->GetWLSvolume(); 
+    if (!fPhotonCatcherVolume)
+        fPhotonCatcherVolume = detectorConstruction->GetPhotonCatcherVolume();
+    if (!fAirVolume)
+        fAirVolume = detectorConstruction->GetAirVolume(); 
   }
 
   // Get current volume
   G4LogicalVolume* volume = step->GetPreStepPoint()
     ->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
+  // Get energy in eV
+  G4double energy = step->GetPreStepPoint()->GetTotalEnergy()/eV;
+  G4double max_PMT_energy = 4.13281; // eV
+
+  // Get track status
   G4TrackStatus trackStatus = step->GetTrack()->GetTrackStatus();
   
-  // Check if we are in scoring volume
-  if (volume == fScoringVolume) fEventAction->FirePMT();
+  // In PMT volume
+  if (volume == fPMTvolume) {
+    if (energy < max_PMT_energy) fEventAction->FirePMT();
+  }
 
-  // Check if we are in the contact volume
-  if (volume == fContactVolume) {
+  // In the box volume
+  if (volume == fPlasticVolume) {
     // Count photon is absorbed
     if (trackStatus == fStopAndKill) {
-      G4cout << "Track died" << G4endl; 
-      fEventAction->PlasticAbsorbed();
+      G4cout << "Track was absorbed" << G4endl; 
+      fEventAction->CountPlasticAbsorption();
     }
     // Count photon reflected
     else { 
-      G4cout << "Track lives" << G4endl;
+      G4cout << "Track was reflected" << G4endl;
       fEventAction->CountPlasticReflection();
     }
+  }
+
+  // In the photon-catcher volume
+  if (volume == fPhotonCatcherVolume) {
+    fEventAction->CountEscapedPhoton();
+  }
+
+  // In the world volume
+  if (volume == fAirVolume) {
+    fEventAction->AirScatter();
   }
 }
 

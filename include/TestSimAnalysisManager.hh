@@ -53,10 +53,9 @@ class TestSimAnalysisManager
     void Save();
 
     void FillNtuple(G4double PrimaryEnergy, G4double PrimaryTheta,
-                    G4double PrimaryPhi, G4int WLSabsorbed,
-                    G4int NumEmitted,
+                    G4double PrimaryPhi, G4int WLSabsorbed, G4int NumEmitted, 
                     G4double PMThits, G4double PlasticReflections,
-                    G4double PlasticAbsorbed, G4double AirScatters);
+                    G4double PlasticAbsorptions, G4double AirScatters, G4double EscapedPhotons);
 
   private:
     G4bool fFactoryOn;

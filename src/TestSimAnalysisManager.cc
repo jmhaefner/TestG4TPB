@@ -84,8 +84,9 @@ void TestSimAnalysisManager::Book()
   analysisManager->CreateNtupleIColumn("Nemitted");  // id = 4
   analysisManager->CreateNtupleDColumn("PMThits"); // id = 5
   analysisManager->CreateNtupleDColumn("PlasticReflections"); // id = 6
-  analysisManager->CreateNtupleDColumn("PlasticAbsorbed"); // id = 7
+  analysisManager->CreateNtupleDColumn("PlasticAbsorptions"); // id = 7
   analysisManager->CreateNtupleDColumn("AirScatters"); // id = 8
+  analysisManager->CreateNtupleDColumn("EscapedPhotons"); // id = 9
   analysisManager->FinishNtuple();
 
   fFactoryOn = true;
@@ -115,9 +116,9 @@ void TestSimAnalysisManager::Save()
 
 void TestSimAnalysisManager::FillNtuple(G4double PrimaryEnergy, G4double PrimaryTheta,
                                         G4double PrimaryPhi, G4int WLSabsorbed,
-                                        G4int Nemitted,
-                                        G4double PMThits, G4double PlasticReflections,
-                                        G4double PlasticAbsorbed, G4double AirScatters)
+                                        G4int Nemitted, G4double PMThits, 
+                                        G4double PlasticReflections, G4double PlasticAbsorptions, 
+                                        G4double AirScatters, G4double EscapedPhotons)
 {
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   // Fill 1st ntuple ( id = 0)
@@ -130,8 +131,9 @@ void TestSimAnalysisManager::FillNtuple(G4double PrimaryEnergy, G4double Primary
   analysisManager->FillNtupleDColumn(0, 5, PMThits); // Number of PMT hits
   analysisManager->FillNtupleDColumn(0, 6, PlasticReflections); // Number of reflections off of the
                                                                 // plastic box surface
-  analysisManager->FillNtupleDColumn(0, 7, PlasticAbsorbed); // Number of photons absorbed by the plastic
+  analysisManager->FillNtupleDColumn(0, 7, PlasticAbsorptions); // Number of photons absorbed by the plastic
   analysisManager->FillNtupleDColumn(0, 8, AirScatters); // Number of photon scatters off of air
+  analysisManager->FillNtupleDColumn(0, 9, EscapedPhotons); // Number of photons that escape past the PMT
   analysisManager->AddNtupleRow(0);
 }
 

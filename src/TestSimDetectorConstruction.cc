@@ -50,8 +50,11 @@
 
 TestSimDetectorConstruction::TestSimDetectorConstruction()
 : G4VUserDetectorConstruction(),
-  fScoringVolume(0),
-  fContactVolume(0)
+  fPMTvolume(0),
+  fPlasticVolume(0),
+  fWLSvolume(0),
+  fPhotonCatcherVolume(0),
+  fAirVolume(0)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -66,11 +69,12 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
   
-  // Plastic box parameters
-  //
+  // Plastic box placement parameters
   G4double separation_z = 0.*mm; // how far from PMT face?
   G4double box_thick = 5.1*mm;
   G4double int_boxXY = 69*mm, int_boxZ = 150*mm;
+
+  // Plastic box material parameters
   G4Material* box_mat = nist->FindOrBuildMaterial("G4_TEFLON");
   box_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Teflon());
   //G4Material* box_mat = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
@@ -80,14 +84,14 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   
    
   // Option to switch on/off checking of volumes overlaps
-  //
   G4bool checkOverlaps = true;
 
-  //     
+
   // World
   //
-  G4double world_sizeXY = 1.2*(int_boxXY + 2*box_thick);
-  G4double world_sizeZ  = 3.*(int_boxZ + box_thick);
+  G4double world_sizeXY = 1.3*(int_boxXY + 2*box_thick);
+  G4double world_sizeZ  = 2.*(int_boxZ + box_thick);
+  G4double assembly_shift = - 0.1*world_sizeZ;
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
   world_mat->SetMaterialPropertiesTable(OpticalMaterialProperties::Air());
   
@@ -109,8 +113,8 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                       false,                 //no boolean operation
                       0,                     //copy number
                       checkOverlaps);        //overlaps checking
-                     
-  //     
+  
+                   
   // Plastic box
   //
   G4Box* fullBox =    
@@ -133,7 +137,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4VPhysicalVolume* physBox = 
     new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(0.,0.,0.5*(int_boxZ + box_thick)+separation_z), // box opening at (0,0,separation_z)
+                    G4ThreeVector(0.,0.,0.5*(int_boxZ + box_thick)+assembly_shift+separation_z), // box opening at (0,0,separation_z)
                     logicBox,                // its logical volume
                     "Box",                   // its name
                     logicWorld,              // its mother  volume
@@ -141,9 +145,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
 
-  //
   // Plastic box optical surface
-  //
   G4OpticalSurface* boxSurface =  new G4OpticalSurface("boxSurface");
   
   new G4LogicalBorderSurface("boxSurface", physWorld, physBox, boxSurface);
@@ -154,9 +156,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   boxSurface->SetModel(unified); 
   boxSurface->SetMaterialPropertiesTable(OpticalMaterialProperties::Teflon());
 
-  //G4double PMT_Z = -int_boxZ/2;
   
-  //
   // Lead volume for PMT 
   //
   G4double PMT_radius = 30.*mm;
@@ -174,17 +174,17 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                         "PMT");             // its name
 
   new G4PVPlacement(0,
-                    G4ThreeVector(0, 0, -PMT_thick/2), // face of PMT at (0,0,0)
+                    G4ThreeVector(0, 0, -PMT_thick/2 + assembly_shift), // face of PMT at (0,0,0)
                     logicPMT,
                     "PMT",
                     logicWorld,
                     false,
                     0,
                     checkOverlaps);
-  //     
+  
+
   // Copper heat sink
-  // 
- 
+  //  
   G4Material* Cu_mat = nist->FindOrBuildMaterial("G4_Cu");
 
   G4Box* fullCu =
@@ -214,7 +214,8 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   // center of copper piece needs to be 23.33 mm from center of PMT in order to be
   // correctly positioned
   G4double cu_radius = 23.33;
-  G4ThreeVector position = G4ThreeVector(cu_radius*std::cos(rot*deg)*mm, cu_radius*std::sin(rot*deg)*mm, -PMT_thick/2);
+  G4ThreeVector position = G4ThreeVector(cu_radius*std::cos(rot*deg)*mm, cu_radius*std::sin(rot*deg)*mm, 
+                                         -PMT_thick/2 + assembly_shift);
   // create the overall transform
   G4Transform3D transform = G4Transform3D(rotm, position);
 
@@ -226,7 +227,8 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
                     false,                   // no boolean operation
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
-  //
+  
+
   // Copper mount optical surface
   //
   G4OpticalSurface* cuSurface =  new G4OpticalSurface("cuSurface");
@@ -238,21 +240,57 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   cuSurface->SetFinish(ground);
   cuSurface->SetModel(unified); 
   //cuSurface->SetMaterialPropertiesTable(OpticalMaterialProperties::Copper());
-                        
+                       
 
+  // Photon catcher
   //
-  // Scoring volume
-  //
-  fScoringVolume = logicPMT;
+  G4Box* fullBox2 =
+    new G4Box("fullBox2",                         // its name
+        0.49*world_sizeXY, 0.49*world_sizeXY, 0.49*world_sizeZ); //its size
 
-  //
-  // Contact volume
-  //
-  fContactVolume = logicBox;
+  G4Box* hollow2 =
+    new G4Box("hollow2",
+        0.47*world_sizeXY, 0.47*world_sizeXY, 0.47*world_sizeZ);
 
+  G4VSolid* solidCatcher =
+    new G4SubtractionSolid("Chatcher", fullBox2, hollow2,
+        0, G4ThreeVector(0,0,0));
+
+  G4LogicalVolume* logicCatcher =
+    new G4LogicalVolume(solidCatcher,            // its solid
+                        pmt_mat,             // its material
+                        "Catcher");              // its name
+
+  G4VPhysicalVolume* physCatcher =
+    new G4PVPlacement(0,                       // no rotation
+                    G4ThreeVector(0.,0.,0.), // centered at world center
+                    logicCatcher,                // its logical volume
+                    "Catcher",                   // its name
+                    logicWorld,              // its mother  volume
+                    false,                   // no boolean operation
+                    0,                       // copy number
+                    checkOverlaps);          // overlaps checking
+
+  // PMT volume
   //
+  fPMTvolume = logicPMT;
+
+  // Plastic volume
+  //
+  fPlasticVolume = logicBox;
+
+  // WLS volume
+  // 
+  
+  // Photon catcher volume
+  //
+  fPhotonCatcherVolume = logicCatcher;
+
+  // Air/world volume
+  //
+  fAirVolume = logicWorld;
+  
   //always return the physical World
-  //
   return physWorld;
 }
 

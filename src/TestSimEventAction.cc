@@ -50,8 +50,9 @@ TestSimEventAction::TestSimEventAction(TestSimRunAction* runAction,
   fNemitted = 0.;
   fPMThits = 0.;
   fPlasticReflections = 0.;
-  fPlasticAbsorbed = 0.;
+  fPlasticAbsorptions = 0.;
   fAirScatters = 0.;
+  fEscapedPhotons = 0;
 } 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -70,8 +71,9 @@ void TestSimEventAction::BeginOfEventAction(const G4Event*)
   fNemitted = 0.;
   fPMThits = 0.;
   fPlasticReflections = 0.;
-  fPlasticAbsorbed = 0.;
+  fPlasticAbsorptions = 0.;
   fAirScatters = 0.;
+  fEscapedPhotons = 0.;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -80,8 +82,8 @@ void TestSimEventAction::EndOfEventAction(const G4Event*)
 {  
   // Fill analysis tree 
   fAnalysisManager->FillNtuple(fPrimaryEnergy, fPrimaryTheta, fPrimaryPhi, 
-                    fWLSabsorbed, fNemitted, fPMThits,
-                    fPlasticReflections, fPlasticAbsorbed, fAirScatters);
+                    fWLSabsorbed, fNemitted, fPMThits, fPlasticReflections, 
+                    fPlasticAbsorptions, fAirScatters, fEscapedPhotons);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
