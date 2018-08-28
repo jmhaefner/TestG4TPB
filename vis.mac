@@ -113,6 +113,8 @@
 /vis/geometry/set/colour Hole 0 1 1 1 .8
 # Make PMT yellow
 /vis/geometry/set/colour PMT 0 1 .8 .1 .9
+# Make Photon Catcher mostly transparent
+/vis/geometry/set/colour Catcher 0 1 .1 .8 .25
 /vis/viewer/set/style wireframe
 /vis/viewer/set/hiddenMarker true
 /vis/viewer/set/viewpointVector -.8 .4 -1
