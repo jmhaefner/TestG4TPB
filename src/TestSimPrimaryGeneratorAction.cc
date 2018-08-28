@@ -138,6 +138,12 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double pz = cos(theta);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px,py,pz));
   fParticleGun->SetParticlePosition(G4ThreeVector(x0*mm,y0*mm,z0*mm));
+  
+  // model the spectrum of the LED
+  G4double central_energy = 4.275*eV; // 290 nm
+  G4double energy_spread = 0.075*eV; // FWHM 12 nm
+  G4double energy = std::abs(G4RandGauss::shoot(central_energy, energy_spread));
+  fParticleGun->SetParticleEnergy(energy);
   //fParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
   //G4RandGauss* gaussian(0.0,1.0);
   // The gaussian from which we sample theta below has std dev of 0.445 in order
