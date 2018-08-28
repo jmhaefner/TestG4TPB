@@ -52,8 +52,12 @@ class TestSimSteppingAction : public G4UserSteppingAction
 
   private:
     TestSimEventAction*  fEventAction;
-    G4LogicalVolume* fScoringVolume;
-    G4LogicalVolume* fContactVolume;
+
+    G4LogicalVolume* fPMTvolume;
+    G4LogicalVolume* fPlasticVolume;
+    G4LogicalVolume* fWLSvolume;       
+    G4LogicalVolume* fPhotonCatcherVolume;      
+    G4LogicalVolume* fAirVolume;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

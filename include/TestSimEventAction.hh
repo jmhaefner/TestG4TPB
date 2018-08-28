@@ -56,8 +56,9 @@ class TestSimEventAction : public G4UserEventAction
     void AddSecondaryPhoton() { fNemitted += 1.0; }
     void FirePMT() { fPMThits += 1.0; }
     void CountPlasticReflection() { fPlasticReflections += 1.0; }
-    void PlasticAbsorbed() { fPlasticAbsorbed += 1.0; }
+    void CountPlasticAbsorption() { fPlasticAbsorptions += 1.0; }
     void AirScatter() { fAirScatters += 1.0; }
+    void CountEscapedPhoton() { fEscapedPhotons += 1.0; }
 
   private:
     TestSimRunAction* fRunAction;
@@ -70,12 +71,11 @@ class TestSimEventAction : public G4UserEventAction
     G4double    fNemitted;
     G4double    fPMThits;
     G4double    fPlasticReflections;
-    G4double    fPlasticAbsorbed;
+    G4double    fPlasticAbsorptions;
     G4double    fAirScatters;
+    G4double    fEscapedPhotons;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-
-    
