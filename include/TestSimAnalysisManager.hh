@@ -23,45 +23,45 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: TestSimDetectorConstruction.hh 69565 2013-05-08 12:35:31Z gcosmo $
+/// \file NEXTPlasticTestSim/include/TestSimAnalysisManager.hh
+/// \brief Definition of the TestSimAnalysisManager class
 //
-/// \file TestSimDetectorConstruction.hh
-/// \brief Definition of the TestSimDetectorConstruction class
+//
+// $Id: TestSimAnalysisManager.hh 99607 2018-08-23 13:33:42Z $
+// 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo...... 
 
-#ifndef TestSimDetectorConstruction_h
-#define TestSimDetectorConstruction_h 1
+#ifndef TestSimAnalysisManager_h
+#define TestSimAnalysisManager_h 1
 
-#include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 
-class G4VPhysicalVolume;
-class G4LogicalVolume;
+#include "g4root.hh"
+//#include "g4csv.hh"
+//#include "g4xml.hh"
 
-/// Detector construction class to define materials and geometry.
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class TestSimDetectorConstruction : public G4VUserDetectorConstruction
+class TestSimAnalysisManager
 {
   public:
-    TestSimDetectorConstruction();
-    virtual ~TestSimDetectorConstruction();
+    TestSimAnalysisManager();
+   ~TestSimAnalysisManager();
 
-    virtual G4VPhysicalVolume* Construct();
-    
-    G4LogicalVolume* GetPMTvolume() const { return fPMTvolume; }
-    G4LogicalVolume* GetPlasticVolume() const { return fPlasticVolume; }
-    G4LogicalVolume* GetWLSvolume() const { return fWLSvolume; }
-    G4LogicalVolume* GetPhotonCatcherVolume() const { return fPhotonCatcherVolume; }
-    G4LogicalVolume* GetAirVolume() const { return fAirVolume; }
+    void Book();
+    void Save();
 
-  protected:
-    G4LogicalVolume*  fPMTvolume;
-    G4LogicalVolume*  fPlasticVolume;
-    G4LogicalVolume*  fWLSvolume;
-    G4LogicalVolume*  fPhotonCatcherVolume;
-    G4LogicalVolume*  fAirVolume;
+    void FillNtuple(G4double PrimaryEnergy, G4double PrimaryTheta,
+                    G4double PrimaryPhi, G4int WLSabsorbed,
+                    G4int NumEmitted,
+                    G4double PMThits, G4double PlasticReflections,
+                    G4double PlasticAbsorbed, G4double AirScatters);
+
+  private:
+    G4bool fFactoryOn;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-
