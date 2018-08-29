@@ -43,16 +43,6 @@ TestSimEventAction::TestSimEventAction(TestSimRunAction* runAction,
   fRunAction(runAction),
   fAnalysisManager(analysisManager)
 {
-  fPrimaryEnergy = 0.;
-  fPrimaryTheta = 0.;
-  fPrimaryPhi = 0.;
-  fWLSabsorbed = 0;
-  fNemitted = 0.;
-  fPMThits = 0.;
-  fPlasticReflections = 0.;
-  fPlasticAbsorptions = 0.;
-  fAirScatters = 0.;
-  fEscapedPhotons = 0;
 } 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -63,17 +53,8 @@ TestSimEventAction::~TestSimEventAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void TestSimEventAction::BeginOfEventAction(const G4Event*)
-{    
-  fPrimaryEnergy = 0.;
-  fPrimaryTheta = 0.;
-  fPrimaryPhi = 0.;
-  fWLSabsorbed = 0;
-  fNemitted = 0.;
-  fPMThits = 0.;
-  fPlasticReflections = 0.;
-  fPlasticAbsorptions = 0.;
-  fAirScatters = 0.;
-  fEscapedPhotons = 0.;
+{
+  fAnalysisManager->Reset();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -81,9 +62,17 @@ void TestSimEventAction::BeginOfEventAction(const G4Event*)
 void TestSimEventAction::EndOfEventAction(const G4Event*)
 {  
   // Fill analysis tree 
-  fAnalysisManager->FillNtuple(fPrimaryEnergy, fPrimaryTheta, fPrimaryPhi, 
-                    fWLSabsorbed, fNemitted, fPMThits, fPlasticReflections, 
-                    fPlasticAbsorptions, fAirScatters, fEscapedPhotons);
+  fAnalysisManager->FillNtuple();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void TestSimEventAction::SetPrimaryAbsorbed() { fAnalysisManager->SetPrimaryAbsorbed(); }
+void TestSimEventAction::AddSecondaryPhoton() { fAnalysisManager->AddSecondaryPhoton(); }
+void TestSimEventAction::FirePMT() { fAnalysisManager->FirePMT(); }
+void TestSimEventAction::MisfirePMT() {fAnalysisManager->MisfirePMT(); }
+void TestSimEventAction::CountPlasticReflection() { fAnalysisManager->CountPlasticReflection(); }
+void TestSimEventAction::CountPlasticAbsorption() { fAnalysisManager->CountPlasticAbsorption(); }
+void TestSimEventAction::CountCopperReflection() { fAnalysisManager->CountCopperReflection(); }
+void TestSimEventAction::CountCopperAbsorption() { fAnalysisManager->CountCopperAbsorption(); }
+void TestSimEventAction::CountEscapedPhoton() { fAnalysisManager->CountEscapedPhoton(); }

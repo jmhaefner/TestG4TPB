@@ -39,10 +39,6 @@ class G4Run;
 class TestSimAnalysisManager;
 
 /// Run action class
-///
-/// In EndOfRunAction(), it calculates the dose in the selected volume 
-/// from the energy deposit accumulated via stepping and event actions.
-/// The computed dose is then printed on the screen.
 
 class TestSimRunAction : public G4UserRunAction
 {

@@ -31,6 +31,7 @@
 #include <cmath>
 #include <typeinfo>
 #include "TestSimPrimaryGeneratorAction.hh"
+#include "TestSimAnalysisManager.hh"
 
 #include "G4LogicalVolumeStore.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -48,8 +49,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TestSimPrimaryGeneratorAction::TestSimPrimaryGeneratorAction()
+TestSimPrimaryGeneratorAction::TestSimPrimaryGeneratorAction(TestSimAnalysisManager* analysisManager)
 : G4VUserPrimaryGeneratorAction(),
+  fAnalysisManager(analysisManager),
   fParticleGun(0), 
   fCopperThickness(0)
 {
@@ -84,7 +86,6 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
-  
 
   G4VPhysicalVolume* CuPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("Cu");
   if ( CuPV ) {
@@ -146,11 +147,16 @@ void TestSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double wl = std::abs(G4RandGauss::shoot(central_wl, wl_spread));
   //G4double energy = (G4PhysicalConstants::h_Planck*G4PhysicalConstants::c_light)/wl;
   G4double energy = (h_Planck*c_light)/wl;
-  fParticleGun->SetParticleEnergy(energy);
+  fParticleGun->SetParticleEnergy(energy);// MeV?
   //fParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
   //G4RandGauss* gaussian(0.0,1.0);
   // The gaussian from which we sample theta below has std dev of 0.445 in order
   // to place the full width half max (= 2.355*sigma) at +/- 60 degrees (pi/3 rad)
+
+  // Fill branches of analysis tree
+  fAnalysisManager->SetPrimaryEnergy(energy/eV);
+  fAnalysisManager->SetPrimaryTheta(theta);
+  fAnalysisManager->SetPrimaryPhi(phi);
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

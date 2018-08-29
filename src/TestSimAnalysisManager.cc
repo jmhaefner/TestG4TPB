@@ -42,7 +42,22 @@
 
 TestSimAnalysisManager::TestSimAnalysisManager()
  : fFactoryOn(false)
-{}
+{
+  fPMTinsertion = 0.;
+  fCopperRotation = 0.;
+  fPrimaryEnergy = 0.;
+  fPrimaryTheta = 0.;
+  fPrimaryPhi = 0.;
+  fWLSabsorbed = 0;
+  fNemitted = 0.;
+  fPMThits = 0.;
+  fPMTduds = 0.;
+  fPlasticReflections = 0.;
+  fPlasticAbsorptions = 0.;
+  fCopperReflections = 0.;
+  fCopperAbsorptions = 0.;
+  fEscapedPhotons = 0;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -77,16 +92,20 @@ void TestSimAnalysisManager::Book()
 
   // Create 1st ntuple (id = 0)
   analysisManager->CreateNtuple("ntuple", "BoxEvents");
-  analysisManager->CreateNtupleDColumn("PrimaryEnergy"); // column Id = 0
-  analysisManager->CreateNtupleDColumn("PrimaryTheta"); // column Id = 1
-  analysisManager->CreateNtupleDColumn("PrimaryPhi"); // id = 2
-  analysisManager->CreateNtupleIColumn("WLSabsorbed"); // id = 3
-  analysisManager->CreateNtupleIColumn("Nemitted");  // id = 4
-  analysisManager->CreateNtupleDColumn("PMThits"); // id = 5
-  analysisManager->CreateNtupleDColumn("PlasticReflections"); // id = 6
-  analysisManager->CreateNtupleDColumn("PlasticAbsorptions"); // id = 7
-  analysisManager->CreateNtupleDColumn("AirScatters"); // id = 8
-  analysisManager->CreateNtupleDColumn("EscapedPhotons"); // id = 9
+  analysisManager->CreateNtupleDColumn("PMTinsertion"); // column id = 0
+  analysisManager->CreateNtupleDColumn("CopperRotation"); // column id = 1
+  analysisManager->CreateNtupleDColumn("PrimaryEnergy"); // column Id = 2
+  analysisManager->CreateNtupleDColumn("PrimaryTheta"); // column Id = 3
+  analysisManager->CreateNtupleDColumn("PrimaryPhi"); // id = 4
+  analysisManager->CreateNtupleIColumn("WLSabsorbed"); // id = 5
+  analysisManager->CreateNtupleIColumn("Nemitted");  // id = 6
+  analysisManager->CreateNtupleDColumn("PMThits"); // id = 7
+  analysisManager->CreateNtupleDColumn("PMTduds"); // id = 8
+  analysisManager->CreateNtupleDColumn("PlasticReflections"); // id = 9
+  analysisManager->CreateNtupleDColumn("PlasticAbsorptions"); // id = 10
+  analysisManager->CreateNtupleDColumn("CopperReflections"); // id = 11
+  analysisManager->CreateNtupleDColumn("CopperAbsorptions"); // id = 12
+  analysisManager->CreateNtupleDColumn("EscapedPhotons"); // id = 13
   analysisManager->FinishNtuple();
 
   fFactoryOn = true;
@@ -114,27 +133,41 @@ void TestSimAnalysisManager::Save()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void TestSimAnalysisManager::FillNtuple(G4double PrimaryEnergy, G4double PrimaryTheta,
-                                        G4double PrimaryPhi, G4int WLSabsorbed,
-                                        G4int Nemitted, G4double PMThits, 
-                                        G4double PlasticReflections, G4double PlasticAbsorptions, 
-                                        G4double AirScatters, G4double EscapedPhotons)
+void TestSimAnalysisManager::FillNtuple()
 {
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   // Fill 1st ntuple ( id = 0)
-  analysisManager->FillNtupleDColumn(0, 0, PrimaryEnergy); // Energy of initial VUV photon
-  analysisManager->FillNtupleDColumn(0, 1, PrimaryTheta); // Theta of initial photon
-  analysisManager->FillNtupleDColumn(0, 2, PrimaryPhi); // Phi of initial photon
-  analysisManager->FillNtupleIColumn(0, 3, WLSabsorbed); // 0 or 1 flag for initial photon's
+  analysisManager->FillNtupleDColumn(0, 0, fPMTinsertion); // Separation of PMT face with box opening
+  analysisManager->FillNtupleDColumn(0, 1, fCopperRotation); // Rotation of copper piece around PMT axis
+  analysisManager->FillNtupleDColumn(0, 2, fPrimaryEnergy); // Energy of initial VUV photon (eV)
+  analysisManager->FillNtupleDColumn(0, 3, fPrimaryTheta); // Theta of initial photon
+  analysisManager->FillNtupleDColumn(0, 4, fPrimaryPhi); // Phi of initial photon
+  analysisManager->FillNtupleIColumn(0, 5, fWLSabsorbed); // 0 or 1 flag for initial photon's
                                                          // being absorbed by the WLS
-  analysisManager->FillNtupleIColumn(0, 4, Nemitted); // Number of photons emitted by the WLS
-  analysisManager->FillNtupleDColumn(0, 5, PMThits); // Number of PMT hits
-  analysisManager->FillNtupleDColumn(0, 6, PlasticReflections); // Number of reflections off of the
+  analysisManager->FillNtupleIColumn(0, 6, fNemitted); // Number of photons emitted by the WLS
+  analysisManager->FillNtupleDColumn(0, 7, fPMThits); // Number of PMT hits (counted photons)
+  analysisManager->FillNtupleDColumn(0, 8, fPMTduds); // Number of photons incident to PMT that don't fire
+  analysisManager->FillNtupleDColumn(0, 9, fPlasticReflections); // Number of reflections off of the
                                                                 // plastic box surface
-  analysisManager->FillNtupleDColumn(0, 7, PlasticAbsorptions); // Number of photons absorbed by the plastic
-  analysisManager->FillNtupleDColumn(0, 8, AirScatters); // Number of photon scatters off of air
-  analysisManager->FillNtupleDColumn(0, 9, EscapedPhotons); // Number of photons that escape past the PMT
+  analysisManager->FillNtupleDColumn(0, 10, fPlasticAbsorptions); // Number of photons absorbed by the plastic
+  analysisManager->FillNtupleDColumn(0, 11, fCopperReflections); // Number of photons reflected by copper
+  analysisManager->FillNtupleDColumn(0, 12, fCopperAbsorptions); // Number of photons absorbed by copper
+  analysisManager->FillNtupleDColumn(0, 13, fEscapedPhotons); // Number of photons that escape past the PMT
   analysisManager->AddNtupleRow(0);
 }
 
-
+void TestSimAnalysisManager::Reset()
+{
+  //fPrimaryEnergy = 0.;
+  //fPrimaryTheta = 0.;
+  //fPrimaryPhi = 0.;
+  fWLSabsorbed = 0;
+  fNemitted = 0.;
+  fPMThits = 0.;
+  fPMTduds = 0.;
+  fPlasticReflections = 0.;
+  fPlasticAbsorptions = 0.;
+  fCopperReflections = 0.;
+  fCopperAbsorptions = 0.;
+  fEscapedPhotons = 0;
+}

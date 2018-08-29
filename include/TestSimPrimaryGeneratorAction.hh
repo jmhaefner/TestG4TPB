@@ -38,16 +38,14 @@
 class G4ParticleGun;
 class G4Event;
 class G4Box;
+class TestSimAnalysisManager;
 
 /// The primary generator action class with particle gun.
-///
-/// The default kinematic is a 6 MeV gamma, randomly distribued 
-/// in front of the phantom across 80% of the (X,Y) phantom size.
 
 class TestSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
-    TestSimPrimaryGeneratorAction();    
+    TestSimPrimaryGeneratorAction(TestSimAnalysisManager* analysisManager);    
     virtual ~TestSimPrimaryGeneratorAction();
 
     // method from the base class
@@ -57,10 +55,10 @@ class TestSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     const G4ParticleGun* GetParticleGun() const { return fParticleGun; }
   
   private:
+    TestSimAnalysisManager* fAnalysisManager;
     G4ParticleGun*  fParticleGun; // pointer a to G4 gun class
     G4ThreeVector fCopperTranslation;
     G4double fCopperThickness;
-
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

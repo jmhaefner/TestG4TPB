@@ -49,31 +49,19 @@ class TestSimEventAction : public G4UserEventAction
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
-    void SetPrimaryEnergy(G4double e) { fPrimaryEnergy = e; }
-    void SetPrimaryTheta(G4double t) { fPrimaryTheta = t; }
-    void SetPrimaryPhi(G4double p) { fPrimaryPhi = p; }
-    void SetPrimaryAbsorbed() { fWLSabsorbed = 1; }
-    void AddSecondaryPhoton() { fNemitted += 1.0; }
-    void FirePMT() { fPMThits += 1.0; }
-    void CountPlasticReflection() { fPlasticReflections += 1.0; }
-    void CountPlasticAbsorption() { fPlasticAbsorptions += 1.0; }
-    void AirScatter() { fAirScatters += 1.0; }
-    void CountEscapedPhoton() { fEscapedPhotons += 1.0; }
+    void SetPrimaryAbsorbed();
+    void AddSecondaryPhoton();
+    void FirePMT();
+    void MisfirePMT();
+    void CountPlasticReflection();
+    void CountPlasticAbsorption();
+    void CountCopperReflection();
+    void CountCopperAbsorption();
+    void CountEscapedPhoton();
 
   private:
     TestSimRunAction* fRunAction;
     TestSimAnalysisManager* fAnalysisManager;
-
-    G4double    fPrimaryEnergy;
-    G4double    fPrimaryTheta;
-    G4double    fPrimaryPhi;
-    G4int       fWLSabsorbed;
-    G4double    fNemitted;
-    G4double    fPMThits;
-    G4double    fPlasticReflections;
-    G4double    fPlasticAbsorptions;
-    G4double    fAirScatters;
-    G4double    fEscapedPhotons;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

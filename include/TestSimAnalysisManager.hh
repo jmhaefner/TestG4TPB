@@ -52,13 +52,41 @@ class TestSimAnalysisManager
     void Book();
     void Save();
 
-    void FillNtuple(G4double PrimaryEnergy, G4double PrimaryTheta,
-                    G4double PrimaryPhi, G4int WLSabsorbed, G4int NumEmitted, 
-                    G4double PMThits, G4double PlasticReflections,
-                    G4double PlasticAbsorptions, G4double AirScatters, G4double EscapedPhotons);
+    void FillNtuple();
+    void Reset();
+    
+    void SetPMTinsertion(G4double d) { fPMTinsertion = d; }
+    void SetCopperRotation(G4double r) { fCopperRotation = r; }
+    void SetPrimaryEnergy(G4double e) { fPrimaryEnergy = e; }
+    void SetPrimaryTheta(G4double t) { fPrimaryTheta = t; }
+    void SetPrimaryPhi(G4double p) { fPrimaryPhi = p; }
+    void SetPrimaryAbsorbed() { fWLSabsorbed = 1; }
+    void AddSecondaryPhoton() { fNemitted += 1.0; }
+    void FirePMT() { fPMThits += 1.0; }
+    void MisfirePMT() { fPMTduds += 1.0; }
+    void CountPlasticReflection() { fPlasticReflections += 1.0; }
+    void CountPlasticAbsorption() { fPlasticAbsorptions += 1.0; }
+    void CountCopperReflection() { fCopperReflections += 1.0; }
+    void CountCopperAbsorption() { fCopperAbsorptions += 1.0; }
+    void CountEscapedPhoton() { fEscapedPhotons += 1.0; }
 
   private:
     G4bool fFactoryOn;
+
+    G4double    fPMTinsertion;
+    G4double    fCopperRotation;
+    G4double    fPrimaryEnergy;
+    G4double    fPrimaryTheta;
+    G4double    fPrimaryPhi;
+    G4int       fWLSabsorbed;
+    G4double    fNemitted;
+    G4double    fPMThits;
+    G4double    fPMTduds;
+    G4double    fPlasticReflections;
+    G4double    fPlasticAbsorptions;
+    G4double    fCopperReflections;
+    G4double    fCopperAbsorptions;
+    G4double    fEscapedPhotons;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
