@@ -52,9 +52,9 @@ TestSimDetectorConstruction::TestSimDetectorConstruction()
 : G4VUserDetectorConstruction(),
   fPMTvolume(0),
   fPlasticVolume(0),
+  fCopperVolume(0),
   fWLSvolume(0),
-  fPhotonCatcherVolume(0),
-  fAirVolume(0)
+  fPhotonCatcherVolume(0)
 { }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -70,7 +70,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   G4NistManager* nist = G4NistManager::Instance();
   
   // Plastic box placement parameters
-  G4double separation_z = 0.*mm; // how far from PMT face?
+  G4double insertion_z = 0.*mm; // how far PMT face inserted into the box
   G4double box_thick = 5.1*mm;
   G4double int_boxXY = 69*mm, int_boxZ = 150*mm;
 
@@ -137,7 +137,7 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
 
   G4VPhysicalVolume* physBox = 
     new G4PVPlacement(0,                       // no rotation
-                    G4ThreeVector(0.,0.,0.5*(int_boxZ + box_thick)+assembly_shift+separation_z), // box opening at (0,0,separation_z)
+                    G4ThreeVector(0.,0.,0.5*(int_boxZ + box_thick)+assembly_shift-insertion_z),
                     logicBox,                // its logical volume
                     "Box",                   // its name
                     logicWorld,              // its mother  volume
@@ -279,16 +279,16 @@ G4VPhysicalVolume* TestSimDetectorConstruction::Construct()
   //
   fPlasticVolume = logicBox;
 
+  // Copper volume
+  //
+  fCopperVolume = logicCu;
+
   // WLS volume
   // 
   
   // Photon catcher volume
   //
   fPhotonCatcherVolume = logicCatcher;
-
-  // Air/world volume
-  //
-  fAirVolume = logicWorld;
   
   //always return the physical World
   return physWorld;

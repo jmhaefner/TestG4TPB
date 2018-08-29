@@ -36,6 +36,7 @@
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
+class TestSimAnalysisManager;
 
 /// Detector construction class to define materials and geometry.
 
@@ -49,16 +50,16 @@ class TestSimDetectorConstruction : public G4VUserDetectorConstruction
     
     G4LogicalVolume* GetPMTvolume() const { return fPMTvolume; }
     G4LogicalVolume* GetPlasticVolume() const { return fPlasticVolume; }
+    G4LogicalVolume* GetCopperVolume() const { return fCopperVolume; }
     G4LogicalVolume* GetWLSvolume() const { return fWLSvolume; }
     G4LogicalVolume* GetPhotonCatcherVolume() const { return fPhotonCatcherVolume; }
-    G4LogicalVolume* GetAirVolume() const { return fAirVolume; }
 
   protected:
     G4LogicalVolume*  fPMTvolume;
     G4LogicalVolume*  fPlasticVolume;
+    G4LogicalVolume*  fCopperVolume;
     G4LogicalVolume*  fWLSvolume;
     G4LogicalVolume*  fPhotonCatcherVolume;
-    G4LogicalVolume*  fAirVolume;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

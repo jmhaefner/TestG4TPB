@@ -63,7 +63,7 @@ void TestSimActionInitialization::Build() const
   TestSimAnalysisManager* ana = new TestSimAnalysisManager();
 
   // Actions
-  SetUserAction(new TestSimPrimaryGeneratorAction);
+  SetUserAction(new TestSimPrimaryGeneratorAction(ana));
 
   TestSimRunAction* runAction = new TestSimRunAction(ana);
   SetUserAction(runAction);
