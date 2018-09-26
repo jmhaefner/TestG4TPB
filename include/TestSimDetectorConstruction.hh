@@ -47,10 +47,11 @@ class TestSimDetectorConstruction : public G4VUserDetectorConstruction
     virtual ~TestSimDetectorConstruction();
 
     virtual G4VPhysicalVolume* Construct();
-    
+
     G4LogicalVolume* GetPMTvolume() const { return fPMTvolume; }
     G4LogicalVolume* GetPlasticVolume() const { return fPlasticVolume; }
     G4LogicalVolume* GetCopperVolume() const { return fCopperVolume; }
+    G4LogicalVolume* GetTPBVolume() const { return fTPBVolume; } // [edit]
     G4LogicalVolume* GetWLSvolume() const { return fWLSvolume; }
     G4LogicalVolume* GetPhotonCatcherVolume() const { return fPhotonCatcherVolume; }
 
@@ -58,6 +59,7 @@ class TestSimDetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume*  fPMTvolume;
     G4LogicalVolume*  fPlasticVolume;
     G4LogicalVolume*  fCopperVolume;
+    G4LogicalVolume*  fTPBVolume; // [edit]
     G4LogicalVolume*  fWLSvolume;
     G4LogicalVolume*  fPhotonCatcherVolume;
 };
@@ -65,4 +67,3 @@ class TestSimDetectorConstruction : public G4VUserDetectorConstruction
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-
